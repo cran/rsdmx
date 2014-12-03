@@ -1,4 +1,4 @@
-189c7d79d56c8f45e8b2a01c8eb51e81 *DESCRIPTION
+fa9ac0633822ba85ced1a5bf51d339cf *DESCRIPTION
 271076cd5da7931d563bb2de665c4673 *NAMESPACE
 2c19743f368c14fea69a3c0744ab3241 *R/Class-SDMX.R
 b8a5f15472accd9365acd02d730f99db *R/Class-SDMXAttribute.R
@@ -27,7 +27,7 @@ f7f9f39b06c21f053a4de85b3e0df408 *R/SDMXAttribute-methods.R
 c1745f24cce2ce525a09d70fb599fbeb *R/SDMXCode-methods.R
 8aac6997de3a9842a2fa2739e156e0b0 *R/SDMXCodelist-methods.R
 be212997a0afa920b58ac391a61c938c *R/SDMXCodelists-methods.R
-ea22d9d8de8936330e2dd8fce888290f *R/SDMXCompactData-methods.R
+1b357c88fceb86d4644d902c58ee1f45 *R/SDMXCompactData-methods.R
 bd210428ced262d92d9764e82e134d38 *R/SDMXComponents-methods.R
 04f5529e757fe00a9700b781b78e78bb *R/SDMXConcept-methods.R
 e4148679581b583b4ce90b378256bb13 *R/SDMXConceptScheme-methods.R
@@ -36,7 +36,7 @@ e49f660c2f399afa074a519d814bf5ee *R/SDMXDataStructure-methods.R
 b228ce2383d43564829da98e6f4dd480 *R/SDMXDataStructureDefinition-methods.R
 a7c3b2fa87b1836755174ef88cfb28b5 *R/SDMXDataStructures-methods.R
 ccd2379490fb7e32e03089538d86c386 *R/SDMXDimension-methods.R
-581424de288032948c65cffc980acd2b *R/SDMXGenericData-methods.R
+5c758916586effb671120f94a0c84635 *R/SDMXGenericData-methods.R
 8ecb6872d85ac8393cda37af10c5ed44 *R/SDMXHeader-methods.R
 19aaf05bcd776049c0249e9403da98f7 *R/SDMXMessageGroup-methods.R
 9bae97c710c4948f0d655f9f1d52128b *R/SDMXPrimaryMeasure-methods.R
@@ -44,7 +44,7 @@ ccd2379490fb7e32e03089538d86c386 *R/SDMXDimension-methods.R
 ef347da38d9304f42eb5f33120b20e9c *R/SDMXStructureType-methods.R
 bea014bc0bb2d98bec27c7808b702547 *R/SDMXTimeDimension-methods.R
 cb5617a4e4efa4dc75d5eabb51fb07c4 *R/SDMXType-methods.R
-c3876f722e5cbc9770dbb6345ce74dec *R/readSDMX.R
+18227da2b8f237d9afac34b59a289dec *R/readSDMX.R
 ff2a4334dda3eac3a10ff6eff4d23025 *README.md
 af681e03cfa4f9b7992e4c88ee87e761 *inst/extdata/Example_Eurostat_2.0.xml
 42686b299d41fc0d0e9aaf5eac0bbafa *inst/extdata/Example_Eurostat_2.1.xml
@@ -104,7 +104,7 @@ ab33dd5b251f597e45cddee88de19e6a *man/getVersion-methods.Rd
 8bc9ce656ea55958ce2d0e6c72e5412d *man/namespaces.SDMX.Rd
 a1559af7d25d90f5e1b4181e255e9179 *man/primarymeasure.SDMXComponents.Rd
 953f38bda24d749ef5a586cfd22ed686 *man/readSDMX.Rd
-bd8beba06eba95d52b123f574cff7945 *man/rsdmx-package.Rd
+f6a64693a78b4527f886691d82c2d395 *man/rsdmx-package.Rd
 d8aa9f7d966c8f73f360dc6da572b192 *man/timedimension.SDMXComponents.Rd
 0b14344ee0b4d4bf7a7717e29569c7f6 *man/type.SDMXStructureType.Rd
 494f97946929d2b39b740c582ddeb598 *man/type.SDMXType.Rd
