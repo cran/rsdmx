@@ -20,13 +20,9 @@ class.SDMXMessageGroup <- function(xmlObj){
     & regexpr("http://www.w3.org", nsDefs.df$uri,
               "match.length", ignore.case = TRUE) == -1,]
   ns <- ns.df$uri
-  if(length(ns) > 1){
-    warning("More than one target dataset namespace found!")
-    ns <- ns[1L]
-  }
+  if(length(ns) > 1) ns <- ns[1L]
   authorityNs <- nsDefs.df[nsDefs.df$uri == ns,]
-  if(nrow(authorityNs) == 0) authorityId <- NULL
-  if(is.null(authorityId)){
+  if(nrow(authorityNs) == 0){
     hasAuthorityNS <- FALSE
   }else{
     hasAuthorityNS <- TRUE

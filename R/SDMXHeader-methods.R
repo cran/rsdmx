@@ -6,6 +6,8 @@
 SDMXHeader <- function(xmlObj){
 
 	sdmxVersion <- getVersion(SDMXSchema(xmlObj))
+  VERSION.10 <- sdmxVersion == "1.0"
+  VERSION.20 <- sdmxVersion == "2.0"
   VERSION.21 <- sdmxVersion == "2.1"
   
   #header elements
@@ -15,57 +17,71 @@ SDMXHeader <- function(xmlObj){
 	#header attributes
 	#-----------------
 	id <- xmlValue(children$ID);
-	test <- as.logical(xmlValue(children$Test));
-	if(is.null(test)) test <- FALSE;
-	truncated <- as.logical(xmlValue(children$Truncated));
+  test <- FALSE
+  if(!is.null(children$Test))
+	  test <- as.logical(xmlValue(children$Test));
+	truncated <- FALSE
+  if(!is.null(children$Truncated))
+    truncated <- as.logical(xmlValue(children$Truncated));
 	name <- xmlValue(children$Name);	
 	
 	#sender
-	sender <- new.env()
+	sender <- list(id=NA,name=NA,contact=NULL)
 	sender$id <- xmlGetAttr(children$Sender,"id");
-	senderNames <- xmlChildren(children$Sender)
-	if(length(senderNames) == 0){
-		sender$name <- NA
-    if(VERSION.21) sender$timezone <- NA
-	}else{
+	senderList <- xmlChildren(children$Sender)
+	if(length(senderList) != 0){
+    #name
 		sender$name <- new.env()
-		if(VERSION.21){
-		  sender$timezone <- xmlValue(senderNames[["Timezone"]])
-      senderNames <- senderNames[-length(senderNames)]
-		}
+    senderNames <- senderList[names(senderList) == "Name"]
 		sapply(senderNames,
-           function(x) {
-             if(xmlName(x) == "Name"){
-               sender$name[[xmlGetAttr(x,"xml:lang")]] <- xmlValue(x)
-             }            
-          })
+		       function(x) {
+		         if(xmlName(x) == "Name"){
+               lang <- xmlGetAttr(x,"xml:lang")
+               if(is.null(lang)) lang <- xmlGetAttr(x,"lang")
+               if(is.null(lang)) lang <- "en"
+		           sender$name[[lang]] <- xmlValue(x)
+		         }            
+		       })
 		sender$name <- as.list(sender$name)
+    
+    #contact
+    sender$contact <- NULL #TODO currently not implemented
+		
+    #timezone
+    if(VERSION.21){
+		  sender$timezone <- xmlValue(senderNames[["Timezone"]])
+		}
 	}
-	sender <- as.list(sender)
+
 	
 	#receiver
-	receiver <- list(id=NA,name=NA)
+	receiver <- list(id=NA,name=NA,contact=NULL)
 	if(!is.null(children$Receiver)){
-		receiver <- new.env()
 		receiver$id <- xmlGetAttr(children$Receiver,"id");
-		receiverNames <- xmlChildren(children$Receiver)
-		if(length(receiverNames) == 0){
-			receiver$name <- NA
-			if(VERSION.21) receiver$name <- NA
-		}else{
-			receiver$name <- new.env()
-			if(VERSION.21){
-			  receiver$timezone <- xmlValue(receiverNames[["Timezone"]])
-			  receiverNames <- receiverNames[-length(receiverNames)]
-			}
-			sapply(receiverNames, function(x) {
-			  if(xmlName(x) == "Name"){
-          receiver$name[[xmlGetAttr(x,"xml:lang")]] <- xmlValue(x)
-			  }
+		receiverList <- xmlChildren(children$Receiver)
+		if(length(receiverList) != 0){
+			#name
+      receiver$name <- new.env()
+      receiverNames <- receiverList[names(receiverList) == "Name"]
+      sapply(receiverNames, function(x) {
+        if(xmlName(x) == "Name"){
+          lang <- xmlGetAttr(x,"xml:lang")
+          if(is.null(lang)) lang <- xmlGetAttr(x,"lang")
+          if(is.null(lang)) lang <- "en"
+          receiver$name[[lang]] <- xmlValue(x)
+        }
       })
-			receiver$name <- as.list(receiver$name)
+      receiver$name <- as.list(receiver$name)
+      
+      #contact
+      sender$contact <- NULL #TODO currently not implemented
+      
+      #timezone
+      if(VERSION.21){
+        sender$timezone <- xmlValue(senderNames[["Timezone"]])
+      }
+			
 		}
-		receiver <- as.list(receiver)
 	}
 	
 	#source
@@ -75,8 +91,9 @@ SDMXHeader <- function(xmlObj){
 	preparedFormat <- NULL;
 	prepared <- xmlValue(children$Prepared);
 	if(!is.na(prepared)){
-		if(nchar(prepared) == 4){
-			prepared <- ISOdate(as.integer(prepared),1,1)
+		if(nchar(prepared) %in% c(4,10)){
+      if(nchar(prepared) == 4)
+			  prepared <- ISOdate(as.integer(prepared),1,1)
 			preparedFormat <- "%Y-%m-%d";
 		}else{
 			if(attr(regexpr("T", prepared),"match.length") != -1){
@@ -93,8 +110,9 @@ SDMXHeader <- function(xmlObj){
 	extractedFormat <- NULL;
 	extracted <- xmlValue(children$Extracted);
 	if(!is.na(extracted)){
-		if(nchar(extracted) == 4){
-			extracted <- ISOdate(as.integer(extracted),1,1)
+		if(nchar(extracted) %in% c(4,10)){
+      if(nchar(extracted) == 4)
+			  extracted <- ISOdate(as.integer(extracted),1,1)
 			extractedFormat <- "%Y-%m-%d";
 		}else{
 			if(attr(regexpr("T", extracted),"match.length") != -1){
@@ -112,8 +130,9 @@ SDMXHeader <- function(xmlObj){
 	reportFormat <- NULL;
 	reportBegin = xmlValue(children$ReportingBegin)
 	if(!is.na(reportBegin)){
-		if(nchar(reportBegin) == 4){
-			reportBegin <- ISOdate(as.integer(reportBegin),1,1)
+		if(nchar(reportBegin) %in% c(4,10)){
+      if(nchar(reportBegin) == 4)
+			  reportBegin <- ISOdate(as.integer(reportBegin),1,1)
 			reportFormat <- "%Y-%m-%d";
 		}else{
 			if(attr(regexpr("T", extracted),"match.length") != -1){
