@@ -1,4 +1,4 @@
-72afc53b71e02099f71692003b7ecc44 *DESCRIPTION
+bba5f03ad489077e4252e8788bc6f9db *DESCRIPTION
 b8ed43792039e05c9be76ec3539f3f13 *NAMESPACE
 2c19743f368c14fea69a3c0744ab3241 *R/Class-SDMX.R
 b8a5f15472accd9365acd02d730f99db *R/Class-SDMXAttribute.R
@@ -37,7 +37,7 @@ e49f660c2f399afa074a519d814bf5ee *R/SDMXDataStructure-methods.R
 b228ce2383d43564829da98e6f4dd480 *R/SDMXDataStructureDefinition-methods.R
 a7c3b2fa87b1836755174ef88cfb28b5 *R/SDMXDataStructures-methods.R
 ccd2379490fb7e32e03089538d86c386 *R/SDMXDimension-methods.R
-5c758916586effb671120f94a0c84635 *R/SDMXGenericData-methods.R
+3f966c7c2f1c43472156aa1a3e5104bf *R/SDMXGenericData-methods.R
 f170ef8c7432d565210c131b1bd85175 *R/SDMXHeader-methods.R
 cfc34b09994dfdffef11ab59ab345e5e *R/SDMXMessageGroup-methods.R
 9bae97c710c4948f0d655f9f1d52128b *R/SDMXPrimaryMeasure-methods.R
@@ -47,7 +47,7 @@ bea014bc0bb2d98bec27c7808b702547 *R/SDMXTimeDimension-methods.R
 cb5617a4e4efa4dc75d5eabb51fb07c4 *R/SDMXType-methods.R
 3f2078810deba555f67906ed4a488c68 *R/SDMXUtilityData-methods.R
 b423166fff2d6e8e035e7b4e5aed1389 *R/readSDMX.R
-46ba226dcb773bef946be3ad736ed14c *README.md
+5cece9c815fe1b9ce007dd7f0f1dec15 *README.md
 af681e03cfa4f9b7992e4c88ee87e761 *inst/extdata/Example_Eurostat_2.0.xml
 42686b299d41fc0d0e9aaf5eac0bbafa *inst/extdata/Example_Eurostat_2.1.xml
 7c7100c89554ad05bf36cf65ffc80451 *inst/extdata/SDMXCodelists_Example_2.0.xml
@@ -106,8 +106,8 @@ f66e491e9e6e82c4bbe015543f9fbfd1 *man/getSDMXHeader-methods.Rd
 ab33dd5b251f597e45cddee88de19e6a *man/getVersion-methods.Rd
 8bc9ce656ea55958ce2d0e6c72e5412d *man/namespaces.SDMX.Rd
 a1559af7d25d90f5e1b4181e255e9179 *man/primarymeasure.SDMXComponents.Rd
-953f38bda24d749ef5a586cfd22ed686 *man/readSDMX.Rd
-283296ce2a60d3bc4e23eaf3468a9deb *man/rsdmx-package.Rd
+b47c093c6d6e7aee5c74cc1e79529776 *man/readSDMX.Rd
+706418e423967efb17c2a88462e93af8 *man/rsdmx-package.Rd
 d8aa9f7d966c8f73f360dc6da572b192 *man/timedimension.SDMXComponents.Rd
 0b14344ee0b4d4bf7a7717e29569c7f6 *man/type.SDMXStructureType.Rd
 494f97946929d2b39b740c582ddeb598 *man/type.SDMXType.Rd
