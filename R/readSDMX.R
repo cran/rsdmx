@@ -11,7 +11,7 @@ readSDMX <- function(file, isURL = TRUE){
 		if(!file.exists(file))
 			stop("File ", file, "not found\n")
 		xmlObj <- xmlTreeParse(file, useInternalNodes = TRUE)
-    		status <- 1
+    status <- 1
 	}else{
 		rsdmxAgent <- paste("rsdmx/",as.character(packageVersion("rsdmx")),sep="")
 		content <- getURL(file, httpheader = list('User-Agent' = rsdmxAgent), ssl.verifypeer = FALSE)
@@ -25,7 +25,7 @@ readSDMX <- function(file, isURL = TRUE){
       		}
 		},error = function(err){
 			print(err)
-			status <- 0
+			status <<- 0
 			return(status)
 		})
 	}
@@ -55,7 +55,7 @@ readSDMX <- function(file, isURL = TRUE){
       "UtilityDataType"    = SDMXUtilityData(xmlObj),
 			"MessageGroupType"  = SDMXMessageGroup(xmlObj),
 			NULL
-		)	
+		) 
 
   	if(is.null(obj)){
     		if(type == "StructureType"){
@@ -63,8 +63,27 @@ readSDMX <- function(file, isURL = TRUE){
       		type <- getStructureType(strTypeObj)
     		}
 			stop(paste("Unsupported SDMX Type '",type,"'",sep=""))
+      
+		}else{
+      
+      #handling footer messages
+      footer <- slot(obj, "footer")
+      footer.msg <- slot(footer, "messages") 
+      if(length(footer.msg) > 0){
+        invisible(
+          lapply(footer.msg,
+                 function(x){
+                   code <- slot(x,"code")
+                   severity <- slot(x,"severity")
+                   lapply(slot(x,"messages"),
+                          function(msg){
+                            warning(paste(severity," (Code ",code,"): ",msg,sep=""),
+                                    call. = FALSE)
+                          })
+                 }))
+      }
+      
 		}
   }
 	return(obj);
 }
-
