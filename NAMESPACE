@@ -30,7 +30,10 @@ exportClasses(
   SDMXComponents,
   SDMXDataStructure,
   SDMXDataStructures,
-  SDMXDataStructureDefinition
+  SDMXDataStructureDefinition,
+  SDMXRequestBuilder,
+  SDMXRESTRequestBuilder,
+  SDMXServiceProvider
 )
 
 export(
@@ -60,9 +63,16 @@ export(
   SDMXDataStructure,
   SDMXDataStructures,
   SDMXDataStructureDefinition,
+  SDMXRequestBuilder,
+  SDMXRESTRequestBuilder,
+  SDMXServiceProvider,
   findNamespace,
   isSoapRequestEnvelope,
   getSoapRequestResult,
+  addSDMXServiceProvider,
+  findSDMXServiceProvider,
+  setSDMXServiceProviders,
+  getSDMXServiceProviders,
 	readSDMX
 )
 
@@ -85,3 +95,4 @@ S3method(as.data.frame, SDMXStructureSpecificData)
 S3method(as.data.frame, SDMXMessageGroup)
 S3method(as.data.frame, SDMXConcepts)
 S3method(as.data.frame, SDMXCodelists)
+S3method(as.data.frame, SDMXDataStructures)
