@@ -16,6 +16,7 @@ exportClasses(
   SDMXCompactData,
   SDMXUtilityData,
   SDMXStructureSpecificData,
+  SDMXCrossSectionalData,
   SDMXMessageGroup,
   SDMXConcept,
   SDMXConceptScheme,
@@ -31,9 +32,12 @@ exportClasses(
   SDMXDataStructure,
   SDMXDataStructures,
   SDMXDataStructureDefinition,
+  SDMXDataFlow,
+  SDMXDataFlows,
   SDMXRequestBuilder,
   SDMXRESTRequestBuilder,
-  SDMXServiceProvider
+  SDMXServiceProvider,
+  SDMXServiceProviders
 )
 
 export(
@@ -48,6 +52,7 @@ export(
   SDMXCompactData,
   SDMXUtilityData,
   SDMXStructureSpecificData,
+  SDMXCrossSectionalData,
   SDMXMessageGroup,
   SDMXConcept,
   SDMXConceptScheme,
@@ -63,9 +68,12 @@ export(
   SDMXDataStructure,
   SDMXDataStructures,
   SDMXDataStructureDefinition,
+  SDMXDataFlow,
+  SDMXDataFlows,
   SDMXRequestBuilder,
   SDMXRESTRequestBuilder,
   SDMXServiceProvider,
+  SDMXServiceProviders,
   findNamespace,
   isSoapRequestEnvelope,
   getSoapRequestResult,
@@ -77,22 +85,18 @@ export(
 )
 
 exportMethods(
-	getSDMXType,
-	getType,
   getStructureType,
-	getSDMXSchema,
-	getVersion,
-	getSDMXHeader,
-  getSDMXFooter,
-  getNamespaces,
-	as.XML
+  getNamespaces
 )
 
 S3method(as.data.frame, SDMXGenericData)
 S3method(as.data.frame, SDMXCompactData)
 S3method(as.data.frame, SDMXUtilityData)
 S3method(as.data.frame, SDMXStructureSpecificData)
+S3method(as.data.frame, SDMXCrossSectionalData)
 S3method(as.data.frame, SDMXMessageGroup)
 S3method(as.data.frame, SDMXConcepts)
 S3method(as.data.frame, SDMXCodelists)
 S3method(as.data.frame, SDMXDataStructures)
+S3method(as.data.frame, SDMXDataFlows)
+S3method(as.data.frame, SDMXServiceProviders)

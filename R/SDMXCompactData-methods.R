@@ -1,6 +1,15 @@
-# E.Blondel - 2013/06/10
-#=======================
-
+#' @name SDMXCompactData
+#' @rdname SDMXCompactData
+#' @aliases SDMXCompactData,SDMXCompactData-method
+#' 
+#' @usage
+#' SDMXCompactData(xmlObj)
+#' 
+#' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @return an object of class "SDMXCompactData"
+#' 
+#' @seealso \link{readSDMX}
+#'
 SDMXCompactData <- function(xmlObj){
   new("SDMXCompactData",
       SDMX(xmlObj)
@@ -12,27 +21,27 @@ as.data.frame.SDMXAllCompactData <- function(x, nsExpr, ...) {
   xmlObj <- x@xmlObj;
   dataset <- NULL
   
-  schema <- getSDMXSchema(x)
-  sdmxVersion <- getVersion(schema)
+  schema <- slot(x,"schema")
+  sdmxVersion <- slot(schema,"version")
   VERSION.21 <- sdmxVersion == "2.1"
   
   #namespace
   hasAuthorityNS <- FALSE
   nsDefs.df <- getNamespaces(x)
   ns <- findNamespace(nsDefs.df, nsExpr)
-
-  ns.df <- nsDefs.df[
+  
+  authorityNs <- nsDefs.df[
     regexpr("http://www.sdmx.org", nsDefs.df$uri,
-            "match.length", ignore.case = TRUE) == -1
+              "match.length", ignore.case = TRUE) == -1
     & regexpr("http://www.w3.org", nsDefs.df$uri,
-              "match.length", ignore.case = TRUE) == -1,]
-  authorityNs <- ns.df
+                "match.length", ignore.case = TRUE) == -1,]
+  
   if(nrow(authorityNs) > 0){
     hasAuthorityNS <- TRUE
-  }
-  if(nrow(authorityNs) > 1){
-    warning("More than one target dataset namespace found!")
-    authorityNs <- authorityNs[1L]
+    if(nrow(authorityNs) > 1){
+      warning("More than one target dataset namespace found!")
+      authorityNs <- authorityNs[1L,]
+    }
   }
   
   if(hasAuthorityNS){

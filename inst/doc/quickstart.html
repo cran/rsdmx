@@ -236,8 +236,9 @@ hr {
 
 <p><a href="http://cran.r-project.org/package=rsdmx">rsdmx</a> offers a low-level set of tools to read <strong>data</strong> and <strong>metadata</strong> in the SDMX-ML format. Its strategy is to make it very easy for the user. For this, a unique function named <code>readSDMX</code> has to be used, whatever it is a <code>data</code> or <code>metadata</code> document, or if it is <code>local</code> or <code>remote</code> datasource.</p>
 
+<p>What <code>rsdmx</code> does support:</p>
+
 <ul>
-<li><p>what <code>rsdmx</code> does support:</p></li>
 <li><p>a SDMX format abstraction library, with focus on the the main SDMX standard XML format (SDMX-ML), and the support of the three format standard versions (<code>1.0</code>, <code>2.0</code>, <code>2.1</code>)</p></li>
 <li><p>an interface to SDMX web-services for a list of well-known data providers, such as OECD, EUROSTAT, ECB, UN FAO, UN ILO, etc (a list that should grow in a near future!). See it <a href="https://github.com/opensdmx/rsdmx/blob/master/vignettes/quickstart.Rmd#using-the-helper-approach">in action</a>!</p></li>
 </ul>
@@ -273,31 +274,57 @@ dataset &lt;- readSDMX(myUrl)
 stats &lt;- as.data.frame(dataset)
 </code></pre>
 
-<p>You can try it out with other datasources, such as from the <a href="http://epp.eurostat.ec.europa.eu/portal/page/portal/sdmx_web_services/getting_started/rest_sdmx_2.1"><strong>EUROSTAT portal</strong></a>: <a href="http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1.BE/?startperiod=2005&amp;endPeriod=2011">http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1.BE/?startperiod=2005&amp;endPeriod=2011</a></p>
+<p>You can try it out with other datasources, such as from the <a href="http://ec.europa.eu/eurostat/web/sdmx-web-services/rest-sdmx-2.1"><strong>EUROSTAT portal</strong></a>: <a href="http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1.BE/?startperiod=2005&amp;endPeriod=2011">http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1.BE/?startperiod=2005&amp;endPeriod=2011</a></p>
 
-<p>The online rsdmx documentation also provides a list of data providers, either from international or national institutions, and <a href="more%20request%20examples">https://github.com/opensdmx/rsdmx/wiki#read-remote-datasets</a>.</p>
+<p>The online rsdmx documentation also provides a list of data providers, either from international or national institutions, and <a href="https://github.com/opensdmx/rsdmx/wiki#read-remote-datasets">more request examples</a>.</p>
 
 <h4>using the <em>helper</em> approach</h4>
 
 <p>Now, the service providers above mentioned are known by <code>rsdmx</code> which let users using <code>readSDMX</code> with the helper parameters. The list of service providers can be retrieved doing:</p>
 
-<pre><code>## [1] &quot;ECB&quot;   &quot;ESTAT&quot; &quot;OECD&quot;  &quot;FAO&quot;   &quot;ILO&quot;
+<pre><code class="r">providers &lt;- getSDMXServiceProviders();
+as.data.frame(providers)
+</code></pre>
+
+<pre><code>##   agencyId                                                          name
+## 1      ECB                                         European Central Bank
+## 2    ESTAT           Eurostat (Statistical office of the European Union)
+## 3     OECD        Organisation for Economic Cooperation and Development 
+## 4      FAO       Food and Agriculture Organization of the United Nations
+## 5      ILO       International Labour Organization of the United Nations
+## 6      UIS                                UNESCO Institute of Statistics
+## 7      ABS                               Australian Bureau of Statistics
+## 8      NBB                                      National Bank of Belgium
+## 9    INSEE Institut national de la statistique et des études économiques
+##           scale country
+## 1 international    &lt;NA&gt;
+## 2 international    &lt;NA&gt;
+## 3 international    &lt;NA&gt;
+## 4 international    &lt;NA&gt;
+## 5 international    &lt;NA&gt;
+## 6 international    &lt;NA&gt;
+## 7      national     AUS
+## 8      national     BEL
+## 9      national     FRA
 </code></pre>
 
 <p>Note it is also possible to add an SDMX service provider at runtime. For registering a new SDMX service provider by default, please contact me!</p>
 
 <p>Let&#39;s see how it would look like for querying an <code>OECD</code> datasource:</p>
 
-<pre><code>## http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MIG/TOT../OECD?startPeriod=2010&amp;endPeriod=2011
+<pre><code class="r">sdmx &lt;- readSDMX(agencyId = &quot;OECD&quot;, resource = &quot;data&quot;, flowRef = &quot;MIG&quot;,
+                key = list(&quot;TOT&quot;, NULL, NULL), start = 2010, end = 2011)
+df &lt;- as.data.frame(sdmx)
+head(df)
 </code></pre>
 
 <pre><code>##   CO2 VAR GEN COU attrs.df obsTime obsValue OBS_STATUS
-## 1 TOT B11 TOT AUS      P1Y    2010   206714       &lt;NA&gt;
-## 2 TOT B11 TOT AUS      P1Y    2011   210704       &lt;NA&gt;
-## 3 TOT B11 TOT AUT      P1Y    2010    96896       &lt;NA&gt;
-## 4 TOT B11 TOT AUT      P1Y    2011   109921       &lt;NA&gt;
-## 5 TOT B11 TOT BEL      P1Y    2010   113582          e
-## 6 TOT B11 TOT BEL      P1Y    2011   117948       &lt;NA&gt;
+## 1 TOT B11 WMN AUS      P1Y    2010   107740       &lt;NA&gt;
+## 2 TOT B11 WMN AUS      P1Y    2011   108865       &lt;NA&gt;
+## 3 TOT B11 TOT AUS      P1Y    2010   206714       &lt;NA&gt;
+## 4 TOT B11 TOT AUS      P1Y    2011   210704       &lt;NA&gt;
+## 5 TOT B12 TOT AUS      P1Y    2010    29307       &lt;NA&gt;
+## 6 TOT B12 TOT AUS      P1Y    2011    31204       &lt;NA&gt;
 </code></pre>
 
 <h3>Read <em>local</em> datasets</h3>
@@ -327,11 +354,6 @@ stats &lt;- as.data.frame(sdmx)
 <pre><code class="r">csUrl &lt;- &quot;http://data.fao.org/sdmx/registry/conceptscheme/FAO/ALL/LATEST/?detail=full&amp;references=none&amp;version=2.1&quot;
 csobj &lt;- readSDMX(csUrl)
 csdf &lt;- as.data.frame(csobj)
-</code></pre>
-
-<pre><code>## Warning in as.data.frame.SDMXConcepts(csobj): Using first conceptScheme referenced in SDMXConcepts object: 
-## 
-##                Specify &#39;conceptSchemeId&#39; argument for a specific conceptScheme
 </code></pre>
 
 <h3>Codelists</h3>

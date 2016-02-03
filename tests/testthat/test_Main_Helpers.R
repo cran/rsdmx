@@ -8,55 +8,271 @@ require(rsdmx, quietly = TRUE)
 require(testthat)
 context("SDMXHelpers")
 
-#SDMX datasets
-#------------
+
+#international data providers
 
 #ECB
-test_that("ECB",{
+#---
+
+#-> dataflow
+test_that("ECB - dataflow",{
   testthat::skip_on_travis()
   testthat::skip_on_cran()
-  sdmx <- readSDMX(id = "ECB", operation = "data",
-                   key = "DD", filter = "M.SE.BSI_STF.RO.4F_N",
-                   start = 2010, end = 2010)
-  expect_is(sdmx, "SDMXGenericData")
+  sdmx <- readSDMX(agencyId = "ECB", resource = "dataflow")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataFlows")
+  }
 })
 
-#EUROSTAT
-test_that("Dataset - EUROSTAT",{
+#-> datastructure
+test_that("ECB - datastructure",{
   testthat::skip_on_travis()
   testthat::skip_on_cran()
-  sdmx <- readSDMX(agencyId = "ESTAT", operation = "data",
-                   key = "cdh_e_fos", filter = list(NULL, NULL, "PC", "FOS1", "BE"),
+  sdmx <- readSDMX(agencyId = "ECB", resource = "datastructure", resourceId = "ECB_DD1")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("ECB - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "ECB", resource = "data",
+                   flowRef = "DD", key = "M.SE.BSI_STF.RO.4F_N", key.mode = "SDMX",
+                   start = 2010, end = 2010)
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXGenericData")
+  }
+})
+
+#ESTAT (EUROSTAT)
+#---------------
+
+#-> dataflow
+test_that("ESTAT - dataflow",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "ESTAT", resource = "dataflow")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataFlows")
+  }
+})
+
+#-> datastructure
+test_that("ESTAT - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "ESTAT", resource = "datastructure", resourceId = "DSD_nama_gdp_c")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("ESTAT - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "ESTAT", resource = "data",
+                   flowRef = "cdh_e_fos", key = list(NULL, NULL, "PC", "FOS1", "BE"),
                    start = 2005, end = 2010)
-  expect_is(sdmx, "SDMXGenericData")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXGenericData")
+  }
 })
 
 #OECD
-test_that("Dataset - OECD",{
+#----
+
+#-> dataflow
+test_that("OECD - dataflow",{
   testthat::skip_on_travis()
   testthat::skip_on_cran()
-  sdmx <- readSDMX(agencyId = "OECD", operation = "GetData",
-                   key = "MIG", filter = list("TOT", NULL, NULL), start = 2011, end = 2011)
-  expect_is(sdmx, "SDMXMessageGroup")
+  sdmx <- readSDMX(agencyId = "OECD", resource = "dataflow")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataFlows")
+  }
 })
 
-#UN-FAO
-test_that("Dataset - UN-FAO",{
+#-> datastructure
+test_that("OECD - datastructure",{
   testthat::skip_on_travis()
   testthat::skip_on_cran()
-  sdmx <- readSDMX(agencyId = "FAO", operation = "data",
-                   key = "CROP_PRODUCTION", filter = list(NULL, "156", "5312", NULL, NULL),
+  sdmx <- readSDMX(agencyId = "OECD", resource = "datastructure", resourceId = "TABLE1")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("OECD - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "OECD", resource = "data",
+                   flowRef = "MIG", key = list("TOT", NULL, NULL), start = 2011, end = 2011)
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXMessageGroup")
+  }
+})
+
+#FAO (UN-FAO)
+#------------
+
+#-> datastructure
+test_that("FAO - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "FAO", resource = "datastructure", resourceId = "FAOSTAT")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("FAO - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "FAO", resource = "data",
+                   flowRef = "CROP_PRODUCTION", key = list(NULL, "156", "5312", NULL, NULL),
                    start = "2010", end = "2014")
-  expect_is(sdmx, "SDMXGenericData")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXGenericData")
+  }
 })
 
-#UN-ILO
-test_that("Dataset - UN-ILO",{
+#ILO (UN-ILO)
+#------------
+
+#-> datastructure
+test_that("ILO - datastructure",{
   testthat::skip_on_travis()
   testthat::skip_on_cran()
-  sdmx <- readSDMX(agencyId = "ILO", operation = "data",
-                   key = "DF_CPI_FRA_CPI_TCPI_COI_RT", filter = "ALL", filter.native = FALSE,
-                   start = "2010-01-01", end = "2014-12-31")
-  expect_is(sdmx, "SDMXGenericData")
+  sdmx <- readSDMX(agencyId = "ILO", resource = "datastructure", resourceId = "YI_ALB_EAP_TEAP_SEX_AGE_NB")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
 })
 
+#-> data
+test_that("ILO - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "ILO", resource = "data",
+                   flowRef = "DF_CPI_FRA_CPI_TCPI_COI_RT", key = "ALL", key.mode = "SDMX",
+                   start = "2010-01-01", end = "2014-12-31")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXGenericData")
+  }
+})
+
+#UIS (UNESCO)
+#------------
+
+#-> datastructure
+test_that("UIS - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "UIS", resource = "datastructure", resourceId = "all")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("UIS - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "UIS", resource = "data",
+                   flowRef = "EDULIT_DS", key = list("OFST_1_CP", NULL),
+                   start = "2000", end = "2015")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXGenericData")
+  }
+})
+
+#national data providers
+
+#ABS (Australia)
+#-------------
+
+#-> datastructure
+test_that("ABS - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "ABS", resource = "datastructure", resourceId = "ALC")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("ABS - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "ABS", resource = "data",
+                   flowRef = "ALC", key = "1.1+2.1+2+3+5+4.6+10+11+12+15+14.A", key.mode = "SDMX",
+                   start = "2000", end = "2015")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXMessageGroup")
+  }
+})
+
+#NBB (Belgium)
+#-------------
+
+#-> datastructure
+test_that("NBB - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "NBB", resource = "datastructure", resourceId = "QNA")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("NBB - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "NBB", resource = "data",
+                   flowRef = "QNA", key = "all", key.mode = "SDMX",
+                   start = "2000", end = "2015")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXMessageGroup")
+  }
+})
+
+#INSEE (France)
+#-------------
+
+#-> dataflow
+test_that("INSEE - dataflow",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "INSEE", resource = "dataflow")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataFlows")
+  }
+})
+
+#-> datastructure
+test_that("INSEE - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "INSEE", resource = "datastructure", resourceId = "IPI-2010-A21")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("INSEE - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(agencyId = "INSEE", resource = "data",
+                   flowRef = "IPI-2010-A21", key = "all", key.mode = "SDMX",
+                   start = 2010, end = 2015)
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXStructureSpecificData")
+  }
+})

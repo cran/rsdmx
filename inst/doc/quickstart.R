@@ -9,13 +9,13 @@ myUrl <- "http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MIG/TOT../OECD?startT
 dataset <- readSDMX(myUrl)
 stats <- as.data.frame(dataset)
 
-## ---- echo = FALSE-------------------------------------------------------
+## ------------------------------------------------------------------------
 providers <- getSDMXServiceProviders();
-sapply(providers, slot, "agencyId")
+as.data.frame(providers)
 
-## ---- echo = FALSE-------------------------------------------------------
-sdmx <- readSDMX(agencyId = "OECD", operation = "GetData", key = "MIG",
-                filter = list("TOT", NULL, NULL), start = 2010, end = 2011)
+## ---- message = FALSE----------------------------------------------------
+sdmx <- readSDMX(agencyId = "OECD", resource = "data", flowRef = "MIG",
+                key = list("TOT", NULL, NULL), start = 2010, end = 2011)
 df <- as.data.frame(sdmx)
 head(df)
 
@@ -30,7 +30,7 @@ sdmx <- readSDMX(sdmx_files[2], isURL = FALSE)
 stats <- as.data.frame(sdmx)
 
 
-## ------------------------------------------------------------------------
+## ---- warning=FALSE------------------------------------------------------
 csUrl <- "http://data.fao.org/sdmx/registry/conceptscheme/FAO/ALL/LATEST/?detail=full&references=none&version=2.1"
 csobj <- readSDMX(csUrl)
 csdf <- as.data.frame(csobj)

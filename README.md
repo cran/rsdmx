@@ -3,13 +3,16 @@
 [![Build Status](https://travis-ci.org/opensdmx/rsdmx.svg?branch=master)](https://travis-ci.org/opensdmx/rsdmx)
 [![codecov.io](http://codecov.io/github/opensdmx/rsdmx/coverage.svg?branch=master)](http://codecov.io/github/opensdmx/rsdmx?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/rsdmx)](http://cran.r-project.org/package=rsdmx)
-[![Github_Status_Badge](https://img.shields.io/badge/Github-0.5--0-blue.svg)](https://github.com/opensdmx/rsdmx)
+[![Github_Status_Badge](https://img.shields.io/badge/Github-0.5--1-blue.svg)](https://github.com/opensdmx/rsdmx)
 
 ``rsdmx``: Tools for reading SDMX data and metadata documents in R
 
 ## Overview
 
-``rsdmx`` is a package to parse/read SDMX data and metadata in R. It provides a set of classes and methods to read data and metadata documents exchanged through the Statistical Data and Metadata Exchange (SDMX) framework. The package currently focuses on the SDMX XML standard format (SDMX-ML). [Learn more](https://github.com/opensdmx/rsdmx/wiki#package_overview).
+``rsdmx`` is a package to parse/read SDMX data and metadata in R. It provides:
+* a set of classes and methods to read data and metadata documents exchanged through the Statistical Data and Metadata Exchange (SDMX) framework. The package currently focuses on the SDMX XML standard format (SDMX-ML).
+* an interface to SDMX web-services for a list of well-known data providers, such as EUROSTAT, OECD, and others 
+[Learn more](https://github.com/opensdmx/rsdmx/wiki#package_overview).
 
 **Collating scattered SDMX data sources**
 
@@ -110,17 +113,15 @@ The list of known SDMX service providers can be queried as follows:
 ```{r, echo = FALSE}
 
 providers <- getSDMXServiceProviders()
-
-#list all provider ids
-sapply(providers, function(x) slot(x, "agencyId"))
+as.data.frame(providers)
 
 ```
 
 #### create/add a SDMX service provider
 
-It also also possible to create and add a new SDMX service providers in this list (so ``readSDMX`` can be aware of it). A provider can be created with the ``SDMXServiceProvider``, and is made of three parameters: an ``agencyId``, its ``name``, and a request ``builder``.
+It also also possible to create and add a new SDMX service providers in this list (so ``readSDMX`` can be aware of it). A provider can be created with the ``SDMXServiceProvider``, and is made of five parameters: an ``agencyId``, its ``name``, ``scale`` (international or national), a ``country`` ISO 3-alpha code (if national) and a request ``builder``.
 
-The request builder can be created with ``SDMXRequestBuilder`` which takes 3 arguments: the ``baseUrl`` of the service endpoint, a ``suffix`` logical parameter (either the ``agencyId`` has to be used as suffix in the web-request), and a ``handler`` function which will allow to build the web request.
+The request builder can be created with ``SDMXRequestBuilder`` which takes 3 arguments: the ``baseUrl`` of the service endpoint, a ``handler`` function which will allow to build the web request, and a ``compliant`` logical parameter (either the request builder is compliant with some web-service specifications), .
 
 ``rsdmx`` intends to provider specific request builder that embedds yet an handler function (not need to implement it), and is now attempting to provide a ``SDMXRESTRequestBuilder`` to build SDMX REST web-requests. All this is still under experiments.
 
@@ -131,15 +132,16 @@ First create a request builder for our provider:
 ```{r, echo = FALSE}
 
 myBuilder <- SDMXRequestBuilder(
-  baseUrl = "http://www.myorg.org/sdmx",
-  suffix = TRUE,
-  handler = function(baseUrl, agencyId, suffix, operation, key, filter, suffix, start, end){
-    paste(baseUrl, operation, key, filter, paste0(agencyId, "?startPeriod=", start, "&endPeriod=", end), sep="/")
-  }
+  regUrl = "http://www.myorg.org/sdmx/registry",
+  repoUrl = "http://www.myorg.org/sdmx/repository",
+  handler = function(baseUrl, agencyId, resource, resourceId, version, flowRef, key, start, end, compliant){
+    paste(baseUrl, agencyId, resource, flowRef, key, start, end, sep="/")
+  },
+  compliant = FALSE
 )
 ```
 
-As you can see, we built a handler that will be in charge of creating a web-request such as [http://www.myorg.org/sdmx/operation/key/filter/agencyId?startPeriod=start&endPeriod=end](http://www.myorg.org/sdmx/operation/key/filter/agencyId?startPeriod=start&endPeriod=end)
+As you can see, we built a handler that will be in charge of creating a web-request such as [http://www.myorg.org/sdmx/agencyId/resource/flowRef/key/start/end](http://www.myorg.org/sdmx/agencyId/resource/flowRef/key/start/end)
 
 We can create a provider with the above request builder, and add it to the list of known SDMX service providers:
 
@@ -156,7 +158,7 @@ builder = myBuilder
 addSDMXServiceProvider(provider)
 
 #check provider has been added
-sapply(getSDMXServiceProviders(), function(x){slot(x, "agencyId")})
+as.data.frame(getSDMXServiceProviders())
 
 
 ```
@@ -174,8 +176,8 @@ oecd <- findSDMXServiceProvider("OECD")
 Now you know how to add a SDMX provider, you can consider using ``readSDMX`` without having to specifying a entire URL, but just by specifying the ``agencyId`` of the provider, and the different query parameters to reach your SDMX document:
 
 ```{r, echo = FALSE}
-sdmx <- readSDMX(agencyId = "MYORG", operation = "data", key="MYSERIE",
-                filter="ALL", filter.native = FALSE, start = 2000, end = 2015)
+sdmx <- readSDMX(agencyId = "MYORG", resource = "data", flowRef="MYSERIE",
+                 key = "all", key.mode = "SDMX", start = 2000, end = 2015)
 ```
 
 The following sections will show you how to query SDMX documents, by using ``readSDMX`` in different ways: either for _local_ or _remote_ files, using ``readSDMX`` as low-level or with the helpers.
@@ -196,7 +198,7 @@ stats <- as.data.frame(dataset)
 ```
 
 You can try it out with other datasources, such as:
-* [**EUROSTAT portal**](http://epp.eurostat.ec.europa.eu/portal/page/portal/sdmx_web_services/getting_started/rest_sdmx_2.1): [http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1.BE/?startperiod=2005&endPeriod=2011](http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1.BE/?startperiod=2005&endPeriod=2011)
+* [**EUROSTAT portal**](http://ec.europa.eu/eurostat/web/sdmx-web-services/rest-sdmx-2.1): [http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1.BE/?startperiod=2005&endPeriod=2011](http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1.BE/?startperiod=2005&endPeriod=2011)
 * [**European Central Bank (ECB)**](https://sdw-wsrest.ecb.europa.eu): [https://sdw-wsrest.ecb.europa.eu/service/data/DD/M.SE.BSI_STF.RO.4F_N](https://sdw-wsrest.ecb.europa.eu/service/data/DD/M.SE.BSI_STF.RO.4F_N)
 * [**UN International Labour Organization (ILO)**](http://www.ilo.org/ilostat/faces/home/statisticaldata/technical_page?_adf.ctrl-state=25zdozvi8_9&_afrLoop=1131342564621899): [http://www.ilo.org/ilostat/sdmx/ws/rest/data/ILO,DF_CPI_FRA_CPI_TCPI_COI_RT/ALL?startPeriod=2000-01-01&endPeriod=2014-12-31](http://www.ilo.org/ilostat/sdmx/ws/rest/data/ILO,DF_CPI_FRA_CPI_TCPI_COI_RT/ALL?startPeriod=2000-01-01&endPeriod=2014-12-31)
 
@@ -205,8 +207,8 @@ The online rsdmx documentation also provides a list of data providers, either fr
 Now, the service providers above mentioned are known by ``rsdmx`` which let users using ``readSDMX`` with the helper parameters. Let's see how it would look like for querying an OECD datasource:
 
 ```{r, echo = FALSE}
-sdmx <- readSDMX(agencyId = "OECD", operation = "GetData", key = "MIG",
-                 filter = list("TOT", NULL, NULL), start = 2010, end = 2011)
+sdmx <- readSDMX(agencyId = "OECD", resource = "data", flowRef = "MIG",
+                 key = list("TOT", NULL, NULL), start = 2010, end = 2011)
 df <- as.data.frame(sdmx)
 head(df)
 ```
