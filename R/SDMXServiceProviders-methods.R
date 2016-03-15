@@ -17,12 +17,17 @@ as.data.frame.SDMXServiceProviders <- function(x, ...){
   out <- as.data.frame(do.call("rbind",
            lapply(slot(x, "providers"),
                   function(provider){
+                    
+                    builder <- slot(provider, "builder")
+                    
                     c(slot(provider,"agencyId"), slot(provider, "name"),
-                      slot(provider, "scale"), slot(provider, "country"))
+                      slot(provider, "scale"), slot(provider, "country"),
+                      class(builder), slot(builder, "compliant"))
                   })),
             stringsAsFactors = FALSE)
-  colnames(out) <- c("agencyId", "name", "scale", "country")
-  return(out)
+  colnames(out) <- c("agencyId", "name", "scale", "country",
+                     "builder", "compliant")
+  return(encodeSDMXOutput(out))
 }
 
 setAs("SDMXGenericData", "data.frame",

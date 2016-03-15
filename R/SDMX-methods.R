@@ -3,17 +3,18 @@
 #' @aliases SDMX,SDMX-method
 #' 
 #' @usage
-#' SDMX(xmlObj)
+#' SDMX(xmlObj, namespaces)
 #' 
 #' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @param namespaces object of class "data.frame" given the list of namespace URIs
 #' @return an object of class "SDMX"
 #' 
 #' @seealso \link{readSDMX}
 
-SDMX <- function(xmlObj){
-	schema <- SDMXSchema(xmlObj);
-	header <- SDMXHeader(xmlObj);
-  footer <- SDMXFooter(xmlObj);
+SDMX <- function(xmlObj, namespaces){
+	schema <- SDMXSchema(xmlObj, namespaces);
+	header <- SDMXHeader(xmlObj, namespaces);
+  footer <- SDMXFooter(xmlObj, namespaces);
 	new("SDMX",
 			xmlObj = xmlObj,
 			schema = schema,
@@ -23,23 +24,43 @@ SDMX <- function(xmlObj){
 
 #functions
 namespaces.SDMX <- function(xmlObj){
-  nsFromXML <- xmlNamespaceDefinitions(xmlObj, recursive = TRUE, simplify = FALSE)
+  nsFromXML <- xmlNamespaceDefinitions(xmlObj, addNames = FALSE,
+                                       recursive = TRUE, simplify = FALSE)
   nsDefs.df <- do.call("rbind",
                        lapply(nsFromXML,
                               function(x){
-                                c(x$id, x$uri) 
+                                out <- NULL
+                                if(length(names(x)) > 0) out <- x$uri
+                                return(out)
                               }))
   row.names(nsDefs.df) <- 1:nrow(nsDefs.df)
-  nsDefs.df <-as.data.frame(nsDefs.df, stringAsFactors = FALSE)
+  nsDefs.df <- as.data.frame(nsDefs.df, stringsAsFactors = FALSE)
   if(nrow(nsDefs.df) > 0){
-    colnames(nsDefs.df) <- c("id","uri")
-    nsDefs.df$id <- as.character(nsDefs.df$id)
+    colnames(nsDefs.df) <- "uri"
     nsDefs.df$uri <- as.character(nsDefs.df$uri)
+    nsDefs.df <- unique(nsDefs.df)
+    
+    nsDefs.df <- nsDefs.df[!duplicated(nsDefs.df$uri),]
+    nsDefs.df <- as.data.frame(nsDefs.df, stringsAsFactors = FALSE)
+    colnames(nsDefs.df) <- "uri"
+    
+    nsDefs.df <- nsDefs.df[
+        regexpr("http://www.w3.org", nsDefs.df$uri,
+                "match.length", ignore.case = TRUE) == -1,]
+    nsDefs.df <- as.data.frame(nsDefs.df, stringsAsFactors = FALSE)
+    colnames(nsDefs.df) <- "uri"
   }
-  nsDefs.df <- unique(nsDefs.df)
-  nsDefs.df <- nsDefs.df[!duplicated(nsDefs.df$uri),]
+  
   return(nsDefs.df)
 }
+
+encodeSDMXOutput <- function(df){
+  for(col in colnames(df)){
+    if(class(df[,col]) == "character") Encoding(df[,col]) <- "UTF-8"
+  }
+  return(df)
+}
+
 
 #' @name getNamespaces
 #' @docType methods
@@ -76,9 +97,8 @@ setMethod(f = "getNamespaces", signature = "SDMX", function(obj){
 #' @usage
 #' findNamespace(namespaces, messageType)
 #' 
-#' @param namespaces object of class \code{data.frame} giving the id and uri of 
-#'                   namespaces available in a SDMX-ML object, typically obtained
-#'                    with \link{getNamespaces}
+#' @param namespaces object of class \code{data.frame} giving the namespaces URIs
+#'        available in a SDMX-ML object, typically obtained with \link{getNamespaces}
 #' @param messageType object of class \code{character} representing a message type
 #' @return an object of class "character" giving the namespace uri if found in the
 #'         available namespaces
@@ -104,9 +124,10 @@ findNamespace <- function(namespaces, messageType){
 #' @description function used to detect if the XML document corresponds to a SOAP
 #'              request response
 #' @usage
-#' isSoapRequestEnvelope(xmlObj)
+#' isSoapRequestEnvelope(xmlObj, namespaces)
 #' 
 #' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @param namespaces object of class "data.frame" given the list of namespace URIs
 #' @return an object of class "logical"
 #' 
 #' @section Warning:
@@ -117,12 +138,9 @@ findNamespace <- function(namespaces, messageType){
 #' @author Emmanuel Blondel, \email{emmanuel.blondel1@@gmail.com}
 #' 
 
-isSoapRequestEnvelope <- function(xmlObj){
-  namespaces <- namespaces.SDMX(xmlObj)
-  ns <- c(ns = namespaces$uri[grep("soap", namespaces$uri)])
-  return(length(ns) > 0)
+isSoapRequestEnvelope <- function(xmlObj, namespaces){
+  return(tolower(xmlName(xmlRoot(xmlObj))) == "envelope")
 }
-
 
 #' @name getSoapRequestResult
 #' @aliases getSoapRequestResult
@@ -147,5 +165,55 @@ getSoapRequestResult <- function(xmlObj){
   response <- xmlChildren(body[[1]]); rm(body);
   result <- xmlChildren(response[[1]]); rm(response);
   sdmxDoc <- xmlDoc(xmlChildren(result[[1]])[[1]]); rm(result);
+  return(sdmxDoc)
+}
+
+
+#' @name isRegistryInterfaceEnvelope
+#' @aliases isRegistryInterfaceEnvelope
+#' @title isRegistryInterfaceEnvelope
+#' @description function used to detect if the XML document corresponds to a 
+#'              registry interface query
+#' @usage
+#' isRegistryInterfaceEnvelope(xmlObj, nativeRoot)
+#' 
+#' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @param nativeRoot object of class "logical" indicating if it is the native document
+#' @return an object of class "logical"
+#' 
+#' @section Warning:
+#' \code{isRegistryInterfaceEnvelope} is a function used internally by \link{readSDMX}
+#' 
+#' @seealso \link{SDMX-class} \link{readSDMX}
+#' 
+#' @author Emmanuel Blondel, \email{emmanuel.blondel1@@gmail.com}
+#' 
+
+isRegistryInterfaceEnvelope <- function(xmlObj, nativeRoot){
+  root <- xmlRoot(xmlObj)
+  if(nativeRoot) root <- root[[1]]
+  return(xmlName(root) == "RegistryInterface")
+}
+
+#' @name getRegistryInterfaceResult
+#' @aliases getRegistryInterfaceResult
+#' @title getRegistryInterfaceResult
+#' @description function used to extract the SDMX-ML message from a registry
+#'              interface query
+#' @usage
+#' getRegistryInterfaceResult(xmlObj)
+#' 
+#' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @return an object of class "XMLInternalDocument derived from XML package
+#' 
+#' @section Warning:
+#' \code{getRegistryInterfaceResult} is a function used internally by \link{readSDMX}
+#' 
+#' @seealso \link{SDMX-class} \link{readSDMX}
+#' 
+#' @author Emmanuel Blondel, \email{emmanuel.blondel1@@gmail.com}
+
+getRegistryInterfaceResult <- function(xmlObj){
+  sdmxDoc <- xmlDoc(xmlChildren(xmlRoot(xmlObj))[[1]])
   return(sdmxDoc)
 }

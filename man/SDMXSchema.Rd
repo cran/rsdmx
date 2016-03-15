@@ -7,10 +7,12 @@
 \alias{SDMXSchema-class}
 \title{Class "SDMXSchema"}
 \usage{
-SDMXSchema(xmlObj)
+SDMXSchema(xmlObj, namespaces)
 }
 \arguments{
 \item{xmlObj}{object of class "XMLInternalDocument derived from XML package}
+
+\item{namespaces}{object of class "data.frame" given the list of namespace URIs}
 }
 \value{
 an object of class "SDMXSchema"

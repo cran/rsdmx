@@ -12,12 +12,6 @@ exportClasses(
   SDMXFooter,
   SDMXType,
   SDMXStructureType,
-  SDMXGenericData,
-  SDMXCompactData,
-  SDMXUtilityData,
-  SDMXStructureSpecificData,
-  SDMXCrossSectionalData,
-  SDMXMessageGroup,
   SDMXConcept,
   SDMXConceptScheme,
   SDMXConcepts,
@@ -32,10 +26,20 @@ exportClasses(
   SDMXDataStructure,
   SDMXDataStructures,
   SDMXDataStructureDefinition,
+  SDMXData,
+  SDMXGenericData,
+  SDMXCompactData,
+  SDMXUtilityData,
+  SDMXStructureSpecificData,
+  SDMXCrossSectionalData,
+  SDMXMessageGroup,
   SDMXDataFlow,
   SDMXDataFlows,
+  SDMXRequestParams,
   SDMXRequestBuilder,
-  SDMXRESTRequestBuilder,
+  SDMXREST20RequestBuilder,
+  SDMXREST21RequestBuilder,
+  SDMXDotStatRequestBuilder,
   SDMXServiceProvider,
   SDMXServiceProviders
 )
@@ -48,12 +52,6 @@ export(
   SDMXFooter,
   SDMXType,
   SDMXStructureType,
-  SDMXGenericData,
-  SDMXCompactData,
-  SDMXUtilityData,
-  SDMXStructureSpecificData,
-  SDMXCrossSectionalData,
-  SDMXMessageGroup,
   SDMXConcept,
   SDMXConceptScheme,
   SDMXConcepts,
@@ -68,15 +66,28 @@ export(
   SDMXDataStructure,
   SDMXDataStructures,
   SDMXDataStructureDefinition,
+  SDMXGenericData,
+  SDMXCompactData,
+  SDMXUtilityData,
+  SDMXStructureSpecificData,
+  SDMXCrossSectionalData,
+  SDMXMessageGroup,
+  SDMXData,
   SDMXDataFlow,
   SDMXDataFlows,
+  SDMXRequestParams,
   SDMXRequestBuilder,
-  SDMXRESTRequestBuilder,
+  SDMXREST20RequestBuilder,
+  SDMXREST21RequestBuilder,
+  SDMXDotStatRequestBuilder,
   SDMXServiceProvider,
   SDMXServiceProviders,
+  namespaces.SDMX,
   findNamespace,
   isSoapRequestEnvelope,
   getSoapRequestResult,
+  isRegistryInterfaceEnvelope,
+  getRegistryInterfaceResult,
   addSDMXServiceProvider,
   findSDMXServiceProvider,
   setSDMXServiceProviders,
@@ -86,7 +97,8 @@ export(
 
 exportMethods(
   getStructureType,
-  getNamespaces
+  getNamespaces,
+  setDSD
 )
 
 S3method(as.data.frame, SDMXGenericData)
@@ -98,5 +110,6 @@ S3method(as.data.frame, SDMXMessageGroup)
 S3method(as.data.frame, SDMXConcepts)
 S3method(as.data.frame, SDMXCodelists)
 S3method(as.data.frame, SDMXDataStructures)
+S3method(as.data.frame, SDMXComponents)
 S3method(as.data.frame, SDMXDataFlows)
 S3method(as.data.frame, SDMXServiceProviders)

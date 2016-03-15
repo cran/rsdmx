@@ -3,21 +3,22 @@
 #' @aliases SDMXCompactData,SDMXCompactData-method
 #' 
 #' @usage
-#' SDMXCompactData(xmlObj)
+#' SDMXCompactData(xmlObj, namespaces)
 #' 
 #' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @param namespaces object of class "data.frame" given the list of namespace URIs
 #' @return an object of class "SDMXCompactData"
 #' 
 #' @seealso \link{readSDMX}
 #'
-SDMXCompactData <- function(xmlObj){
+SDMXCompactData <- function(xmlObj, namespaces){
   new("SDMXCompactData",
-      SDMX(xmlObj)
+      SDMXData(xmlObj, namespaces)
   )		
 }
 
 #methods
-as.data.frame.SDMXAllCompactData <- function(x, nsExpr, ...) {
+as.data.frame.SDMXAllCompactData <- function(x, nsExpr, labels = FALSE, ...) {
   xmlObj <- x@xmlObj;
   dataset <- NULL
   
@@ -32,15 +33,17 @@ as.data.frame.SDMXAllCompactData <- function(x, nsExpr, ...) {
   
   authorityNs <- nsDefs.df[
     regexpr("http://www.sdmx.org", nsDefs.df$uri,
-              "match.length", ignore.case = TRUE) == -1
-    & regexpr("http://www.w3.org", nsDefs.df$uri,
-                "match.length", ignore.case = TRUE) == -1,]
+            "match.length", ignore.case = TRUE) == -1,]
+  authorityNs <- as.data.frame(authorityNs, stringsAsFactors = FALSE)
+  colnames(authorityNs) <- "uri"
   
   if(nrow(authorityNs) > 0){
     hasAuthorityNS <- TRUE
     if(nrow(authorityNs) > 1){
       warning("More than one target dataset namespace found!")
       authorityNs <- authorityNs[1L,]
+      authorityNs <- as.data.frame(authorityNs, stringsAsFactors = FALSE)
+      colnames(authorityNs) <- "uri"
     }
   }
   
@@ -55,6 +58,8 @@ as.data.frame.SDMXAllCompactData <- function(x, nsExpr, ...) {
     }else{
       if(nrow(nsDefs.df) > 0){
         serieNs <- nsDefs.df[1,]
+        serieNs <- as.data.frame(serieNs, stringsAsFactors = FALSE)
+        colnames(serieNs) <- "uri"
         seriesXML <- getNodeSet(xmlObj, "//nt:Series", c(nt = serieNs$uri)) 
       }else{    
         stop("Unsupported CompactData parser for empty target XML namespace")
@@ -122,14 +127,18 @@ as.data.frame.SDMXAllCompactData <- function(x, nsExpr, ...) {
   }
   if(!is.null(dataset)) row.names(dataset) <- 1:nrow(dataset)
   
-  # output
-  return(dataset)
+  #enrich with labels
+  if(labels){
+    dsd <- slot(x, "dsd")
+    if(!is.null(dsd)) dataset <- addLabels.SDMXData(dataset, dsd)
+  }
+
+  #output
+  return(encodeSDMXOutput(dataset))
 }
 
 
-as.data.frame.SDMXCompactData <- function(x, ...){
-  return(as.data.frame.SDMXAllCompactData(x, "compact"));
+as.data.frame.SDMXCompactData <- function(x, row.names=NULL, optional=FALSE,
+                                          labels = FALSE, ...){
+  return(as.data.frame.SDMXAllCompactData(x, "compact", labels));
 }
-
-setAs("SDMXCompactData", "data.frame",
-      function(from) as.data.frame.SDMXCompactData(from));

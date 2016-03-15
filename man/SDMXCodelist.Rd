@@ -7,10 +7,12 @@
 \alias{SDMXCodelist-class}
 \title{Class "SDMXCodelist"}
 \usage{
-SDMXCodelist(xmlObj)
+SDMXCodelist(xmlObj, namespaces)
 }
 \arguments{
 \item{xmlObj}{object of class "XMLInternalDocument derived from XML package}
+
+\item{namespaces}{object of class "data.frame" given the list of namespace URIs}
 }
 \value{
 an object of class "SDMXCodelist"

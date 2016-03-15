@@ -7,10 +7,12 @@
 \alias{SDMXStructureType-class}
 \title{Class "SDMXStructureType"}
 \usage{
-SDMXStructureType(xmlObj, resource)
+SDMXStructureType(xmlObj, namespaces, resource)
 }
 \arguments{
 \item{xmlObj}{object of class "XMLInternalDocument derived from XML package}
+
+\item{namespaces}{object of class "data.frame" given the list of namespace URIs}
 
 \item{resource}{object of class "character" giving the REST resource to be
 queried (required to distinguish between dataflows and datastructures in

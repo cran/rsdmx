@@ -4,8 +4,8 @@
 #' @description \code{readSDMX} is the main function to use to read SDMX data
 #'
 #' @usage readSDMX(file, isURL,
-#'                 provider, agencyId, resource, resourceId, version,
-#'                 flowRef, key, key.mode, start, end)
+#'                 provider, providerId, agencyId, resource, resourceId, version,
+#'                 flowRef, key, key.mode, start, end, dsd, validate, verbose)
 #'                 
 #' @param file path to SDMX-ML document that needs to be parsed
 #' @param isURL a value of class "logical" either the path is an url, and data 
@@ -13,9 +13,11 @@
 #'        Ignored in case \code{readSDMX} is used with helpers (based on the 
 #'        embedded list of \code{SDMXServiceProvider})
 #' @param provider an object of class "SDMXServiceProvider". If specified, 
-#'        \code{file} and \code{isURL} arguments will be ignored.
-#' @param agencyId an object of class "character" representing a provider id. 
+#'        \code{file} and \code{isURL} arguments will be ignored.      
+#' @param providerId an object of class "character" representing a provider id. 
 #'        It has to be match a default provider as listed in\code{getSDMXServiceProviders()}
+#' @param agencyId an object of class "character representing an agency id, for
+#'        which data should be requested (from a particular service provider)      
 #' @param resource an object of class "character" giving the SDMX service request 
 #'        resource to query e.g. "data". Recognized if a valid provider or provide 
 #'        id has been specified as argument.
@@ -37,6 +39,14 @@
 #'        Recognized if a valid provider or provide id has been specified as argument.
 #' @param end an object of class "integer" or "character" giving the SDMX end time to apply. 
 #'        Recognized if a valid provider or provide id has been specified as argument.
+#' @param dsd an Object of class "logical" if an attempt to inherit the DSD should be performed.
+#'        Active only if \code{"readSDMX"} is used as helper method (ie if data is fetched using 
+#'        an embedded service provider. Default is FALSE
+#' @param validate an object of class "logical" indicating if a validation check has to
+#'        be performed on the SDMX-ML document to check its SDMX compliance when reading it.
+#'        Default is FALSE.
+#' @param verbose an Object of class "logical" that indicates if rsdmx messages should
+#'        appear to user. Default is TRUE.
 #' 
 #' @return an object of class "SDMX"
 #' 
@@ -65,7 +75,7 @@
 #'    # (reliable remote datasource but with possible occasional unavailability)
 #'    
 #'    #examples using embedded providers
-#'    sdmx <- readSDMX(agencyId = "OECD", resource = "data", flowRef = "MIG",
+#'    sdmx <- readSDMX(providerId = "OECD", resource = "data", flowRef = "MIG",
 #'                      key = list("TOT", NULL, NULL), start = 2011, end = 2011)
 #'    stats <- as.data.frame(sdmx)
 #'    head(stats)
@@ -115,7 +125,7 @@
 #'    # (reliable remote datasource but with possible occasional unavailability)
 #'    
 #'    #using embedded providers
-#'    dsd <- readSDMX(agencyId = "OECD", resource = "datastructure",
+#'    dsd <- readSDMX(providerId = "OECD", resource = "datastructure",
 #'                    resourceId = "WATER_ABSTRACT")
 #'    
 #'    #get codelists from DSD
@@ -135,8 +145,13 @@
 #'    
 
 readSDMX <- function(file = NULL, isURL = TRUE,
-                     provider = NULL, agencyId = NULL, resource = NULL, resourceId = NULL, version = NULL,
-                     flowRef = NULL, key = NULL, key.mode = "R", start = NULL, end = NULL) {
+                     provider = NULL, providerId = NULL,
+                     agencyId = NULL, resource = NULL, resourceId = NULL, version = NULL,
+                     flowRef = NULL, key = NULL, key.mode = "R", start = NULL, end = NULL, dsd = FALSE,
+                     validate = FALSE, verbose = TRUE) {
+  
+  #set option for SDMX compliance validation
+  .rsdmx.options$validate = validate
   
   if(!(key.mode %in% c("R", "SDMX"))){
     stop("Invalid value for key.mode argument. Accepted values are 'R', 'SDMX' ")
@@ -151,10 +166,10 @@ readSDMX <- function(file = NULL, isURL = TRUE,
     buildRequest <- TRUE
   }
   
-  if(!is.null(agencyId)){
-    provider <- findSDMXServiceProvider(agencyId)
+  if(!is.null(providerId)){
+    provider <- findSDMXServiceProvider(providerId)
     if(is.null(provider)){
-      stop("No provider with identifier ", agencyId)
+      stop("No provider with identifier ", providerId)
     }
     buildRequest <- TRUE
   }
@@ -162,24 +177,47 @@ readSDMX <- function(file = NULL, isURL = TRUE,
   #proceed with the request build
   if(buildRequest){
     
+    if(is.null(resource)) stop("SDMX service resource cannot be null")
+    
+    #request handler
+    requestHandler <- provider@builder@handler
+    if((resource %in% provider@builder@unsupportedResources) ||
+       !(resource %in% names(requestHandler)))
+      stop("Unsupported SDMX service resource for this provider")
+    
+    #apply SDMX key mode
     if(key.mode == "R" && !missing(key) && !is.null(key)){
       key <- paste(sapply(key, paste, collapse = "+"), collapse=".")
     }
     
-    if(is.null(resource)) stop("SDMX service resource cannot be null")
-    file <- provider@builder@handler(
-                             regUrl = provider@builder@regUrl,
-                             repoUrl = provider@builder@repoUrl,
-                             agencyId = provider@agencyId,
-                             resource = resource,
-                             resourceId = resourceId,
-                             version = version,
-                             flowRef = flowRef,
-                             key = key,
-                             start = start,
-                             end = end,
-                             compliant = provider@builder@compliant)
-    message(file)
+    #request params
+    requestParams <- SDMXRequestParams(
+                       regUrl = provider@builder@regUrl,
+                       repoUrl = provider@builder@repoUrl,
+                       providerId = providerId,
+                       agencyId = agencyId,
+                       resource = resource,
+                       resourceId = resourceId,
+                       version = version,
+                       flowRef = flowRef,
+                       key = key,
+                       start = start,
+                       end = end,
+                       compliant = provider@builder@compliant
+                     )
+    #formatting requestParams
+    requestFormatter <- provider@builder@formatter
+    requestParams <- switch(resource,
+                           "dataflow" = requestFormatter$dataflow(requestParams),
+                           "datastructure" = requestFormatter$datastructure(requestParams),
+                           "data" = requestFormatter$data(requestParams))
+    #preparing request
+    file <- switch(resource,
+                  "dataflow" = requestHandler$dataflow(requestParams),
+                  "datastructure" = requestHandler$datastructure(requestParams),
+                  "data" = requestHandler$data(requestParams)
+    )
+    if(verbose) message(paste0("-> Fetching '", file, "'"))
   }
   
   #call readSDMX original
@@ -199,13 +237,17 @@ readSDMX <- function(file = NULL, isURL = TRUE,
                       ssl.verifypeer = FALSE, .encoding = "UTF-8")
     
     status <- tryCatch({
-      if(attr(regexpr("<!DOCTYPE html>", content), "match.length") == -1){
+      if((attr(regexpr("<!DOCTYPE html>", content), "match.length") == -1) && 
+         (attr(regexpr("<html>", content), "match.length") == -1)){
         
         #check the presence of a BOM
         BOM <- "\ufeff"
         if(attr(regexpr(BOM, content), "match.length") != - 1){
           content <- gsub(BOM, "", content)
         }
+        
+        #check presence of XML comments
+        content <- gsub("<!--.*?-->", "", content)
         
         xmlObj <- xmlTreeParse(content, useInternalNodes = TRUE)
         status <- 1
@@ -220,15 +262,15 @@ readSDMX <- function(file = NULL, isURL = TRUE,
   }
   
   #internal function for SDMX Structure-based document
-  getSDMXStructureObject <- function(xmlObj, resource){
-    strTypeObj <- SDMXStructureType(xmlObj, resource)
+  getSDMXStructureObject <- function(xmlObj, ns, resource){
+    strTypeObj <- SDMXStructureType(xmlObj, ns, resource)
     strType <- getStructureType(strTypeObj)
     strObj <- switch(strType,
-                     "DataflowsType" = SDMXDataFlows(xmlObj),
-                     "ConceptsType" = SDMXConcepts(xmlObj),
-                     "CodelistsType" = SDMXCodelists(xmlObj),
-                     "DataStructuresType" = SDMXDataStructures(xmlObj),
-                     "DataStructureDefinitionsType" = SDMXDataStructureDefinition(xmlObj),
+                     "DataflowsType" = SDMXDataFlows(xmlObj, ns),
+                     "ConceptsType" = SDMXConcepts(xmlObj, ns),
+                     "CodelistsType" = SDMXCodelists(xmlObj, ns),
+                     "DataStructuresType" = SDMXDataStructures(xmlObj, ns),
+                     "DataStructureDefinitionsType" = SDMXDataStructureDefinition(xmlObj, ns),
                      NULL
     )
     return(strObj)
@@ -238,26 +280,34 @@ readSDMX <- function(file = NULL, isURL = TRUE,
   obj <- NULL
   if(status){ 
     
+    #namespaces
+    ns <- namespaces.SDMX(xmlObj)
+    
     #convenience for SDMX documents embedded in SOAP XML responses
-    if(isSoapRequestEnvelope(xmlObj)){
+    if(isSoapRequestEnvelope(xmlObj, ns)){
       xmlObj <- getSoapRequestResult(xmlObj)
+    }
+    
+    #convenience for SDMX documents queried through a RegistryInterface
+    if(isRegistryInterfaceEnvelope(xmlObj, TRUE)){
+      xmlObj <- getRegistryInterfaceResult(xmlObj)
     }
     
     type <- SDMXType(xmlObj)@type
     obj <- switch(type,
-                  "StructureType"             = getSDMXStructureObject(xmlObj, resource),
-                  "GenericDataType"           = SDMXGenericData(xmlObj),
-                  "CompactDataType"           = SDMXCompactData(xmlObj),
-                  "UtilityDataType"           = SDMXUtilityData(xmlObj),
-                  "StructureSpecificDataType" = SDMXStructureSpecificData(xmlObj),
-                  "CrossSectionalDataType"    = SDMXCrossSectionalData(xmlObj),
-                  "MessageGroupType"          = SDMXMessageGroup(xmlObj),
+                  "StructureType"             = getSDMXStructureObject(xmlObj, ns, resource),
+                  "GenericDataType"           = SDMXGenericData(xmlObj, ns),
+                  "CompactDataType"           = SDMXCompactData(xmlObj, ns),
+                  "UtilityDataType"           = SDMXUtilityData(xmlObj, ns),
+                  "StructureSpecificDataType" = SDMXStructureSpecificData(xmlObj, ns),
+                  "CrossSectionalDataType"    = SDMXCrossSectionalData(xmlObj, ns),
+                  "MessageGroupType"          = SDMXMessageGroup(xmlObj, ns),
                   NULL
     ) 
     
     if(is.null(obj)){
       if(type == "StructureType"){
-        strTypeObj <- SDMXStructureType(xmlObj, resource)
+        strTypeObj <- SDMXStructureType(xmlObj, ns, resource)
         type <- getStructureType(strTypeObj)
       }
       stop(paste("Unsupported SDMX Type '",type,"'",sep=""))
@@ -284,6 +334,43 @@ readSDMX <- function(file = NULL, isURL = TRUE,
       }
     }
   }
+  
+  #attempt to get DSD in case of helper method
+  if(buildRequest && resource == "data" && dsd){
+    
+    dsdRef <- slot(obj,"dsdRef")
+    if(!is.null(dsdRef)){
+      
+      #hack for ESTAT, ISTAT
+      #TODO investigate if using agencyId prefix and version suffix is SDMX compliant
+      if(providerId %in% c("ESTAT","ISTAT")){
+        providerIdPrefix <- paste0(providerId,"_")
+        if(regexpr(providerIdPrefix,dsdRef) == 1){
+          dsdRef <- unlist(strsplit(dsdRef, providerIdPrefix))[2]
+          if(substr(dsdRef, nchar(dsdRef)-1+1, nchar(dsdRef)) != flowRef){
+            versionPrefix <- unlist(strsplit(dsdRef, flowRef))[2]
+            dsdRef <- unlist(strsplit(dsdRef, versionPrefix))[1]
+          }
+        }
+      }
+      if(verbose) message(paste0("-> DSD ref identified in dataset = '", dsdRef, "'"))
+      if(verbose) message("-> Attempt to fetch & bind DSD to dataset")
+    }else{
+      if(verbose) message("-> No DSD ref associated to dataset")
+      if(verbose) message("-> Attempt to fetch & bind DSD to dataset using 'flowRef'")
+      dsdRef <- flowRef
+    }
+    
+    dsdObj <- readSDMX(providerId = providerId, resource = "datastructure",
+                       resourceId = dsdRef, verbose = verbose)
+    if(is.null(dsdObj)){
+      if(verbose) message("-> Impossible to fetch DSD")
+    }else{
+      if(verbose) message("-> DSD fetched and associated to dataset!")
+      slot(obj, "dsd") <- dsdObj
+    }
+  }
+  
   return(obj);
   
 }

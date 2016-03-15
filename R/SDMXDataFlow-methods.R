@@ -3,22 +3,22 @@
 #' @aliases SDMXDataFlow,SDMXDataFlow-method
 #' 
 #' @usage
-#' SDMXDataFlow(xmlObj)
+#' SDMXDataFlow(xmlObj, namespaces)
 #' 
 #' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @param namespaces object of class "data.frame" given the list of namespace URIs
 #' @return an object of class "SDMXDataFlow"
 #' 
 #' @seealso \link{readSDMX}
 #'
-SDMXDataFlow <- function(xmlObj){
+SDMXDataFlow <- function(xmlObj, namespaces){
   
-  sdmxVersion <- version.SDMXSchema(xmlDoc(xmlObj))
-  VERSION.21 <- sdmxVersion == "2.1"
-  
-  namespaces <- namespaces.SDMX(xmlDoc(xmlObj))
   messageNs <- findNamespace(namespaces, "message")
   strNs <- findNamespace(namespaces, "structure")
   
+  sdmxVersion <- version.SDMXSchema(xmlDoc(xmlObj), namespaces)
+  VERSION.21 <- sdmxVersion == "2.1"
+
   #attributes
   #=========
   id = xmlGetAttr(xmlObj, "id")
@@ -67,9 +67,15 @@ SDMXDataFlow <- function(xmlObj){
                              namespaces = c(str = as.character(strNs),
                                             com = as.character(comNs)))
   }else{
+    
     flowNamesXML <- getNodeSet(xmlDoc(xmlObj),
+                               "//str:Dataflow/str:Name",
+                               namespaces = c(str = as.character(strNs)))
+    if(length(flowNamesXML) == 0){
+      flowNamesXML <- getNodeSet(xmlDoc(xmlObj),
                              "//str:KeyFamily/str:Name",
                              namespaces = c(str = as.character(strNs)))
+    }
   }
   flowNames <- NULL
   if(length(flowNamesXML) > 0){
@@ -91,9 +97,15 @@ SDMXDataFlow <- function(xmlObj){
                            namespaces = c(str = as.character(strNs),
                                           com = as.character(comNs)))
   }else{
-    flowNamesXML <- getNodeSet(xmlDoc(xmlObj),
+    
+    flowDesXML <- getNodeSet(xmlDoc(xmlObj),
+                               "//str:Dataflow/str:Description",
+                               namespaces = c(str = as.character(strNs)))
+    if(length(flowDesXML) == 0){
+      flowDesXML <- getNodeSet(xmlDoc(xmlObj),
                                "//str:KeyFamily/str:Description",
                                namespaces = c(str = as.character(strNs)))
+    }
   }  
   flowDescriptions <- list()
   if(length(flowDesXML) > 0){
@@ -109,13 +121,24 @@ SDMXDataFlow <- function(xmlObj){
   #dsd reference
   dsdRef <- as.character(NA)
   if(VERSION.21){
-    flowStr <- getNodeSet(xmlDoc(xmlObj), "//str:Dataflow/str:Structure")
+    flowStr <- getNodeSet(xmlDoc(xmlObj), "//str:Dataflow/str:Structure",
+                          namespaces = c(str = as.character(strNs)))
     if(length(flowStr) > 0){
      flowStr <- flowStr[[1]]
      dsdRef <- xmlGetAttr(xmlChildren(flowStr)[[1]], "id")
     }
   }else{
-    dsdRef <- id
+    dsdRef <- NULL
+    kfRefXML <- getNodeSet(xmlDoc(xmlObj), "//str:Dataflow/str:KeyFamilyRef",
+                           namespaces = c(str = as.character(strNs)))
+    if(length(kfRefXML) > 0){
+      kfRefXML <- kfRefXML[[1]]
+      children <- xmlChildren(kfRefXML)
+      if("KeyFamilyID" %in% names(children)){
+        dsdRef <- xmlValue(children$KeyFamilyID)
+      }
+    }
+    if(is.null(dsdRef)) dsdRef <- id
   }
   
   #instantiate the object

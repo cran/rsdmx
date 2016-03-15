@@ -14,10 +14,28 @@ providers <- getSDMXServiceProviders();
 as.data.frame(providers)
 
 ## ---- message = FALSE----------------------------------------------------
-sdmx <- readSDMX(agencyId = "OECD", resource = "data", flowRef = "MIG",
+sdmx <- readSDMX(providerId = "OECD", resource = "data", flowRef = "MIG",
                 key = list("TOT", NULL, NULL), start = 2010, end = 2011)
 df <- as.data.frame(sdmx)
 head(df)
+
+## ---- message = FALSE----------------------------------------------------
+sdmx <- readSDMX(providerId = "OECD", resource = "data", flowRef = "MIG",
+                key = list("TOT", NULL, NULL), start = 2010, end = 2011,
+                dsd = TRUE)
+df <- as.data.frame(sdmx, labels = TRUE)
+head(df)
+
+## ---- message = FALSE----------------------------------------------------
+#data without DSD
+sdmx.data <- readSDMX(providerId = "OECD", resource = "data", flowRef = "MIG",
+                key = list("TOT", NULL, NULL), start = 2010, end = 2011)
+
+#DSD
+sdmx.dsd <- readSDMX(providerId = "OECD", resource = "datastructure", resourceId = "MIG")
+
+#associate data and dsd
+sdmx.data <- setDSD(sdmx.data, sdmx.dsd)
 
 ## ------------------------------------------------------------------------
 #bulk download from Eurostat

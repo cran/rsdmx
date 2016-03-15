@@ -3,32 +3,34 @@
 #' @aliases SDMXCodelists,SDMXCodelists-method
 #' 
 #' @usage
-#' SDMXCodelists(xmlObj)
+#' SDMXCodelists(xmlObj, namespaces)
 #' 
 #' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @param namespaces object of class "data.frame" given the list of namespace URIs
 #' @return an object of class "SDMXCodelists"
 #' 
 #' @seealso \link{readSDMX}
 #'
-SDMXCodelists <- function(xmlObj){
+SDMXCodelists <- function(xmlObj, namespaces){
   new("SDMXCodelists",
-      SDMX(xmlObj),
-      codelists = codelists.SDMXCodelists(xmlObj)
+      SDMX(xmlObj, namespaces),
+      codelists = codelists.SDMXCodelists(xmlObj, namespaces)
   )
 }
 
 #get list of SDMXCodelist
 #=======================
-codelists.SDMXCodelists <- function(xmlObj){
+codelists.SDMXCodelists <- function(xmlObj, namespaces){
   
   codelists <- NULL
   
-  sdmxVersion <- version.SDMXSchema(xmlObj)
-  VERSION.21 <- sdmxVersion == "2.1"
-  
-  namespaces <- namespaces.SDMX(xmlObj)
-  messageNs <- findNamespace(namespaces, "message")
+  messageNsString <- "message"
+  if(isRegistryInterfaceEnvelope(xmlObj, FALSE)) messageNsString <- "registry"
+  messageNs <- findNamespace(namespaces, messageNsString)
   strNs <- findNamespace(namespaces, "structure")
+  
+  sdmxVersion <- version.SDMXSchema(xmlObj, namespaces)
+  VERSION.21 <- sdmxVersion == "2.1"
   
   codelistsXML <- NULL
   if(VERSION.21){
@@ -43,7 +45,7 @@ codelists.SDMXCodelists <- function(xmlObj){
                                              str = as.character(strNs)))
   }
   if(!is.null(codelistsXML)){
-    codelists <- lapply(codelistsXML, function(x){ SDMXCodelist(x)})
+    codelists <- lapply(codelistsXML, SDMXCodelist, namespaces)
   }
   return(codelists)
 }
@@ -85,7 +87,7 @@ as.data.frame.SDMXCodelists <- function(x, ...,
                           as.data.frame(sapply(slotNames(code), function(x){
                             obj <- slot(code,x)
                             return(obj)
-                          }))
+                          }), stringsAsFactors = FALSE)
                         })
     )
   }
@@ -94,7 +96,7 @@ as.data.frame.SDMXCodelists <- function(x, ...,
     codes <- codes[,colSums(is.na(codes))<nrow(codes)]
   }
   
-  return(codes)
+  return(encodeSDMXOutput(codes))
 }
 
 setAs("SDMXCodelists", "data.frame",

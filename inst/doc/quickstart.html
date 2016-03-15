@@ -286,45 +286,123 @@ stats &lt;- as.data.frame(dataset)
 as.data.frame(providers)
 </code></pre>
 
-<pre><code>##   agencyId                                                          name
-## 1      ECB                                         European Central Bank
-## 2    ESTAT           Eurostat (Statistical office of the European Union)
-## 3     OECD        Organisation for Economic Cooperation and Development 
-## 4      FAO       Food and Agriculture Organization of the United Nations
-## 5      ILO       International Labour Organization of the United Nations
-## 6      UIS                                UNESCO Institute of Statistics
-## 7      ABS                               Australian Bureau of Statistics
-## 8      NBB                                      National Bank of Belgium
-## 9    INSEE Institut national de la statistique et des études économiques
-##           scale country
-## 1 international    &lt;NA&gt;
-## 2 international    &lt;NA&gt;
-## 3 international    &lt;NA&gt;
-## 4 international    &lt;NA&gt;
-## 5 international    &lt;NA&gt;
-## 6 international    &lt;NA&gt;
-## 7      national     AUS
-## 8      national     BEL
-## 9      national     FRA
+<pre><code>##    agencyId                                                          name
+## 1       ECB                                         European Central Bank
+## 2     ESTAT           Eurostat (Statistical office of the European Union)
+## 3       IMF                                   International Monetary Fund
+## 4      OECD        Organisation for Economic Cooperation and Development 
+## 5      UNSD                            United Nations Statistics Division
+## 6       FAO       Food and Agriculture Organization of the United Nations
+## 7       ILO       International Labour Organization of the United Nations
+## 8       UIS                                UNESCO Institute of Statistics
+## 9       ABS                               Australian Bureau of Statistics
+## 10      NBB                                      National Bank of Belgium
+## 11    INSEE Institut national de la statistique et des études économiques
+## 12    INEGI        Instituto Nacional de Estadística y Geografía (Méjico)
+## 13    ISTAT                     Istituto nazionale di statistica (Italia)
+## 14   KNOEMA                                    KNOEMA knowledge plateform
+##            scale country                   builder compliant
+## 1  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
+## 2  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
+## 3  international    &lt;NA&gt;  SDMXREST20RequestBuilder     FALSE
+## 4  international    &lt;NA&gt; SDMXDotStatRequestBuilder     FALSE
+## 5  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
+## 6  international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
+## 7  international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
+## 8  international    &lt;NA&gt; SDMXDotStatRequestBuilder     FALSE
+## 9       national     AUS SDMXDotStatRequestBuilder     FALSE
+## 10      national     BEL SDMXDotStatRequestBuilder     FALSE
+## 11      national     FRA  SDMXREST21RequestBuilder      TRUE
+## 12      national     MEX  SDMXREST20RequestBuilder     FALSE
+## 13      national     ITA  SDMXREST21RequestBuilder      TRUE
+## 14 international    &lt;NA&gt;        SDMXRequestBuilder     FALSE
 </code></pre>
 
 <p>Note it is also possible to add an SDMX service provider at runtime. For registering a new SDMX service provider by default, please contact me!</p>
 
 <p>Let&#39;s see how it would look like for querying an <code>OECD</code> datasource:</p>
 
-<pre><code class="r">sdmx &lt;- readSDMX(agencyId = &quot;OECD&quot;, resource = &quot;data&quot;, flowRef = &quot;MIG&quot;,
+<pre><code class="r">sdmx &lt;- readSDMX(providerId = &quot;OECD&quot;, resource = &quot;data&quot;, flowRef = &quot;MIG&quot;,
                 key = list(&quot;TOT&quot;, NULL, NULL), start = 2010, end = 2011)
 df &lt;- as.data.frame(sdmx)
 head(df)
 </code></pre>
 
-<pre><code>##   CO2 VAR GEN COU attrs.df obsTime obsValue OBS_STATUS
-## 1 TOT B11 WMN AUS      P1Y    2010   107740       &lt;NA&gt;
-## 2 TOT B11 WMN AUS      P1Y    2011   108865       &lt;NA&gt;
-## 3 TOT B11 TOT AUS      P1Y    2010   206714       &lt;NA&gt;
-## 4 TOT B11 TOT AUS      P1Y    2011   210704       &lt;NA&gt;
-## 5 TOT B12 TOT AUS      P1Y    2010    29307       &lt;NA&gt;
-## 6 TOT B12 TOT AUS      P1Y    2011    31204       &lt;NA&gt;
+<pre><code>##   CO2 VAR GEN COU TIME_FORMAT obsTime obsValue OBS_STATUS
+## 1 TOT B11 WMN AUS         P1Y    2010   107740       &lt;NA&gt;
+## 2 TOT B11 WMN AUS         P1Y    2011   108865       &lt;NA&gt;
+## 3 TOT B11 TOT AUS         P1Y    2010   206714       &lt;NA&gt;
+## 4 TOT B11 TOT AUS         P1Y    2011   210704       &lt;NA&gt;
+## 5 TOT B12 TOT AUS         P1Y    2010    29307       &lt;NA&gt;
+## 6 TOT B12 TOT AUS         P1Y    2011    31204       &lt;NA&gt;
+</code></pre>
+
+<p>It is also possible to query a dataset together with its &ldquo;definition&rdquo;, handled
+in a separate SDMX-ML document named <code>DataStructureDefinition</code> (DSD). It is 
+particularly useful when you want to enrich your dataset with all labels. For this, 
+you need the DSD which contains all reference data.</p>
+
+<p>To do so, you only need to append <code>dsd = TRUE</code> (default value is <code>FALSE</code>), 
+to the previous request, and specify <code>labels = TRUE</code> when calling <code>as.data.frame</code>,
+as follows:</p>
+
+<pre><code class="r">sdmx &lt;- readSDMX(providerId = &quot;OECD&quot;, resource = &quot;data&quot;, flowRef = &quot;MIG&quot;,
+                key = list(&quot;TOT&quot;, NULL, NULL), start = 2010, end = 2011,
+                dsd = TRUE)
+df &lt;- as.data.frame(sdmx, labels = TRUE)
+head(df)
+</code></pre>
+
+<pre><code>##   CO2 CO2_label.fr CO2_label.en VAR
+## 1 TOT        Total        Total B11
+## 2 TOT        Total        Total B11
+## 3 TOT        Total        Total B11
+## 4 TOT        Total        Total B11
+## 5 TOT        Total        Total B11
+## 6 TOT        Total        Total B11
+##                                      VAR_label.fr
+## 1 Entrées de personnes étrangères par nationalité
+## 2 Entrées de personnes étrangères par nationalité
+## 3 Entrées de personnes étrangères par nationalité
+## 4 Entrées de personnes étrangères par nationalité
+## 5 Entrées de personnes étrangères par nationalité
+## 6 Entrées de personnes étrangères par nationalité
+##                                   VAR_label.en GEN GEN_label.fr
+## 1 Inflows of foreign population by nationality TOT        Total
+## 2 Inflows of foreign population by nationality TOT        Total
+## 3 Inflows of foreign population by nationality TOT        Total
+## 4 Inflows of foreign population by nationality TOT        Total
+## 5 Inflows of foreign population by nationality TOT        Total
+## 6 Inflows of foreign population by nationality TOT        Total
+##   GEN_label.en COU COU_label.fr COU_label.en TIME_FORMAT
+## 1        Total AUS    Australie    Australia         P1Y
+## 2        Total AUS    Australie    Australia         P1Y
+## 3        Total AUS    Australie    Australia         P1Y
+## 4        Total AUS    Australie    Australia         P1Y
+## 5        Total AUS    Australie    Australia         P1Y
+## 6        Total AUS    Australie    Australia         P1Y
+##   TIME_FORMAT_label.en obsTime obsValue OBS_STATUS OBS_STATUS_label.en
+## 1               Annual    2010   107740          e     Estimated value
+## 2               Annual    2011   108865          e     Estimated value
+## 3               Annual    2010   206714          e     Estimated value
+## 4               Annual    2011   210704       &lt;NA&gt;                &lt;NA&gt;
+## 5               Annual    2010    29307       &lt;NA&gt;                &lt;NA&gt;
+## 6               Annual    2011    31204       &lt;NA&gt;                &lt;NA&gt;
+</code></pre>
+
+<p>Note that in case you are reading SDMX-ML documents with the native approach (with
+URLs), instead of the embedded providers, it is also possible to associate a DSD
+to a dataset by using the function <code>setDSD</code>. Let&#39;s try how it works:</p>
+
+<pre><code class="r">#data without DSD
+sdmx.data &lt;- readSDMX(providerId = &quot;OECD&quot;, resource = &quot;data&quot;, flowRef = &quot;MIG&quot;,
+                key = list(&quot;TOT&quot;, NULL, NULL), start = 2010, end = 2011)
+
+#DSD
+sdmx.dsd &lt;- readSDMX(providerId = &quot;OECD&quot;, resource = &quot;datastructure&quot;, resourceId = &quot;MIG&quot;)
+
+#associate data and dsd
+sdmx.data &lt;- setDSD(sdmx.data, sdmx.dsd)
 </code></pre>
 
 <h3>Read <em>local</em> datasets</h3>
@@ -353,7 +431,12 @@ stats &lt;- as.data.frame(sdmx)
 
 <pre><code class="r">csUrl &lt;- &quot;http://data.fao.org/sdmx/registry/conceptscheme/FAO/ALL/LATEST/?detail=full&amp;references=none&amp;version=2.1&quot;
 csobj &lt;- readSDMX(csUrl)
-csdf &lt;- as.data.frame(csobj)
+</code></pre>
+
+<pre><code>## &lt;simpleError in doTryCatch(return(expr), name, parentenv, handler): The SDMX web-request failed. Please retry&gt;
+</code></pre>
+
+<pre><code class="r">csdf &lt;- as.data.frame(csobj)
 </code></pre>
 
 <h3>Codelists</h3>

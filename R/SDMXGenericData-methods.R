@@ -3,21 +3,23 @@
 #' @aliases SDMXGenericData,SDMXGenericData-method
 #' 
 #' @usage
-#' SDMXGenericData(xmlObj)
+#' SDMXGenericData(xmlObj, namespaces)
 #' 
 #' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @param namespaces object of class "data.frame" given the list of namespace URIs
 #' @return an object of class "SDMXGenericData"
 #' 
 #' @seealso \link{readSDMX}
 #'
-SDMXGenericData <- function(xmlObj){
+SDMXGenericData <- function(xmlObj, namespaces){
   new("SDMXGenericData",
-      SDMX(xmlObj)
+      SDMXData(xmlObj, namespaces)
   )		
 }
 
 #methods
-as.data.frame.SDMXGenericData <- function(x, ...){
+as.data.frame.SDMXGenericData <- function(x, row.names=NULL, optional=FALSE,
+                                          labels = FALSE, ...){
   xmlObj <- x@xmlObj;
   dataset <- NULL
   
@@ -71,9 +73,10 @@ as.data.frame.SDMXGenericData <- function(x, ...){
   }
   
   #output structure
-  serieNames <- c(keysNames, "Time", "ObsValue")
-  if(!is.null(obsAttrsNames)) serieNames <- c(serieNames, obsAttrsNames)
+  serieNames <- keysNames
   if(!is.null(serieAttrsNames)) serieNames <- c(serieNames, serieAttrsNames)
+  serieNames <- c(serieNames, "obsTime", "obsValue")
+  if(!is.null(obsAttrsNames)) serieNames <- c(serieNames, obsAttrsNames)
   
   #obs parser function
   parseObs <- function(obs){
@@ -127,7 +130,9 @@ as.data.frame.SDMXGenericData <- function(x, ...){
         if(any(obsAttrs.df == "NA")){
           obsAttrs.df[obsAttrs.df == "NA"] <- NA
         }
-        if(!is.na(obsAttrs.df) && any(obsAttrs.df == "NULL")){
+
+        if(!is.na(obsAttrs.df) && ifelse(is.na(any(obsAttrs.df == "NULL")),FALSE,
+                                         any(obsAttrs.df == "NULL"))){
           obsAttrs.df[obsAttrs.df == "NULL"] <- NA
         }
   
@@ -172,9 +177,9 @@ as.data.frame.SDMXGenericData <- function(x, ...){
     keydf <- structure(keyValues, .Names = keyNames) 
     keydf <- as.data.frame(lapply(keydf, as.character), stringsAsFactors=FALSE)
     if(!is.null(obsdf)){
-      keydf <- keydf[rep(row.names(keydf), nrow(obsdf)),]
+      keydf <- keydf[rep(base::row.names(keydf), nrow(obsdf)),]
       if(class(keydf) == "data.frame"){
-        row.names(keydf) <- 1:nrow(obsdf)
+        base::row.names(keydf) <- 1:nrow(obsdf)
         colnames(keydf) <- keyNames
       }
     }
@@ -198,9 +203,9 @@ as.data.frame.SDMXGenericData <- function(x, ...){
         attrs.df <- as.data.frame(lapply(attrs.df, as.character),
                                   stringsAsFactors=FALSE)
         if(!is.null(obsdf)){
-          attrs.df <- attrs.df[rep(row.names(attrs.df), nrow(obsdf)),]
+          attrs.df <- attrs.df[rep(base::row.names(attrs.df), nrow(obsdf)),]
           if(is(attrs.df, "data.frame")){
-            row.names(attrs.df) <- 1:nrow(obsdf)
+            base::row.names(attrs.df) <- 1:nrow(obsdf)
             colnames(attrs.df) <- attrsNames
           }
         }
@@ -228,17 +233,20 @@ as.data.frame.SDMXGenericData <- function(x, ...){
   dataset <- do.call("rbind.fill", lapply(seriesXML, function(x){
     serie <- parseSerie(x)
   }))
-  
+  colnames(dataset) <- serieNames
   dataset$obsValue <- as.numeric(dataset$obsValue)
   
   if(any(as.character(dataset$obsValue) == "NaN", na.rm = TRUE)){
     dataset[as.character(dataset$obsValue) == "NaN",]$obsValue <- NA
   }
-  if(!is.null(dataset)) row.names(dataset) <- 1:nrow(dataset)
+  if(!is.null(dataset)) base::row.names(dataset) <- 1:nrow(dataset)
+  
+  #enrich with labels
+  if(labels){
+    dsd <- slot(x, "dsd")
+    if(!is.null(dsd)) dataset <- addLabels.SDMXData(dataset, dsd)
+  }
   
   # output
-  return(dataset)
+  return(encodeSDMXOutput(dataset))
 }
-
-setAs("SDMXGenericData", "data.frame",
-      function(from) as.data.frame.SDMXGenericData(from));

@@ -3,23 +3,25 @@
 #' @aliases SDMXCrossSectionalData,SDMXCrossSectionalData-method
 #' 
 #' @usage
-#' SDMXCrossSectionalData(xmlObj)
+#' SDMXCrossSectionalData(xmlObj, namespaces)
 #' 
 #' @param xmlObj object of class "XMLInternalDocument derived from XML package
+#' @param namespaces object of class "data.frame" given the list of namespace URIs
 #' @return an object of class "SDMXCrossSectionalData"
 #' 
 #' @seealso \link{readSDMX}
 #'
-SDMXCrossSectionalData <- function(xmlObj){
+SDMXCrossSectionalData <- function(xmlObj, namespaces){
   new("SDMXCrossSectionalData",
-      SDMX(xmlObj)
+      SDMXData(xmlObj, namespaces)
   )    
 }
 
 #methods
 #=======
 
-as.data.frame.SDMXCrossSectionalData <- function(x, ...){
+as.data.frame.SDMXCrossSectionalData <- function(x, row.names=NULL, optional=FALSE,
+                                                 labels = FALSE, ...){
   
   xmlObj <- x@xmlObj;
   dataset <- NULL
@@ -34,15 +36,18 @@ as.data.frame.SDMXCrossSectionalData <- function(x, ...){
   
   authorityNs <- nsDefs.df[
     regexpr("http://www.sdmx.org", nsDefs.df$uri,
-            "match.length", ignore.case = TRUE) == -1
-    & regexpr("http://www.w3.org", nsDefs.df$uri,
-              "match.length", ignore.case = TRUE) == -1,]
+            "match.length", ignore.case = TRUE) == -1,]
+  authorityNs <- as.data.frame(authorityNs, stringsAsFactors = FALSE)
+  colnames(authorityNs) <- "uri"
   
   if(nrow(authorityNs) > 0){
     hasAuthorityNS <- TRUE
     if(nrow(authorityNs) > 1){
       warning("More than one target dataset namespace found!")
       authorityNs <- authorityNs[1L,]
+      authorityNs <- as.data.frame(authorityNs, stringsAsFactors = FALSE)
+      colnames(authorityNs) <- "uri"
+      
     }
   }
   
@@ -138,11 +143,14 @@ as.data.frame.SDMXCrossSectionalData <- function(x, ...){
   if(any(as.character(dataset$obsValue) == "NaN", na.rm = TRUE)){
     dataset[as.character(dataset$obsValue) == "NaN",]$obsValue <- NA
   }
-  if(!is.null(dataset)) row.names(dataset) <- 1:nrow(dataset)
+  if(!is.null(dataset)) base::row.names(dataset) <- 1:nrow(dataset)
+  
+  #enrich with labels
+  if(labels){
+    dsd <- slot(x, "dsd")
+    if(!is.null(dsd)) dataset <- addLabels.SDMXData(dataset, dsd)
+  }
   
   # output
-  return(dataset)
+  return(encodeSDMXOutput(dataset))
 }
-
-setAs("SDMXCrossSectionalData", "data.frame",
-      function(from) as.data.frame.SDMXCrossSectionalData(from));
