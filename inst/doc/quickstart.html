@@ -295,12 +295,13 @@ as.data.frame(providers)
 ## 6       FAO       Food and Agriculture Organization of the United Nations
 ## 7       ILO       International Labour Organization of the United Nations
 ## 8       UIS                                UNESCO Institute of Statistics
-## 9       ABS                               Australian Bureau of Statistics
-## 10      NBB                                      National Bank of Belgium
-## 11    INSEE Institut national de la statistique et des études économiques
-## 12    INEGI        Instituto Nacional de Estadística y Geografía (Méjico)
-## 13    ISTAT                     Istituto nazionale di statistica (Italia)
-## 14   KNOEMA                                    KNOEMA knowledge plateform
+## 9  WBG_WITS                               World Integrated Trade Solution
+## 10      ABS                               Australian Bureau of Statistics
+## 11      NBB                                      National Bank of Belgium
+## 12    INSEE Institut national de la statistique et des études économiques
+## 13    INEGI        Instituto Nacional de Estadística y Geografía (Méjico)
+## 14    ISTAT                     Istituto nazionale di statistica (Italia)
+## 15   KNOEMA                                    KNOEMA knowledge plateform
 ##            scale country                   builder compliant
 ## 1  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
 ## 2  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
@@ -310,12 +311,13 @@ as.data.frame(providers)
 ## 6  international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
 ## 7  international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
 ## 8  international    &lt;NA&gt; SDMXDotStatRequestBuilder     FALSE
-## 9       national     AUS SDMXDotStatRequestBuilder     FALSE
-## 10      national     BEL SDMXDotStatRequestBuilder     FALSE
-## 11      national     FRA  SDMXREST21RequestBuilder      TRUE
-## 12      national     MEX  SDMXREST20RequestBuilder     FALSE
-## 13      national     ITA  SDMXREST21RequestBuilder      TRUE
-## 14 international    &lt;NA&gt;        SDMXRequestBuilder     FALSE
+## 9  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
+## 10      national     AUS SDMXDotStatRequestBuilder     FALSE
+## 11      national     BEL SDMXDotStatRequestBuilder     FALSE
+## 12      national     FRA  SDMXREST21RequestBuilder      TRUE
+## 13      national     MEX  SDMXREST20RequestBuilder     FALSE
+## 14      national     ITA  SDMXREST21RequestBuilder      TRUE
+## 15 international    &lt;NA&gt;        SDMXRequestBuilder     FALSE
 </code></pre>
 
 <p>Note it is also possible to add an SDMX service provider at runtime. For registering a new SDMX service provider by default, please contact me!</p>
@@ -431,12 +433,7 @@ stats &lt;- as.data.frame(sdmx)
 
 <pre><code class="r">csUrl &lt;- &quot;http://data.fao.org/sdmx/registry/conceptscheme/FAO/ALL/LATEST/?detail=full&amp;references=none&amp;version=2.1&quot;
 csobj &lt;- readSDMX(csUrl)
-</code></pre>
-
-<pre><code>## &lt;simpleError in doTryCatch(return(expr), name, parentenv, handler): The SDMX web-request failed. Please retry&gt;
-</code></pre>
-
-<pre><code class="r">csdf &lt;- as.data.frame(csobj)
+csdf &lt;- as.data.frame(csobj)
 </code></pre>
 
 <h3>Codelists</h3>
