@@ -1,6 +1,6 @@
 Package: rsdmx
-Version: 0.5-4
-Date: 2016-06-17
+Version: 0.5-5
+Date: 2016-08-17
 Title: Tools for Reading SDMX Data and Metadata
 Authors@R: c(
   person("Emmanuel", "Blondel", role = c("aut", "cre"), email = "emmanuel.blondel1@gmail.com"),
@@ -29,6 +29,7 @@ Collate: Class-SDMXSchema.R Class-SDMXType.R Class-SDMXStructureType.R
         Class-SDMXDataStructureDefinition.R Class-SDMXData.R
         Class-SDMXGenericData.R Class-SDMXCompactData.R
         Class-SDMXUtilityData.R Class-SDMXStructureSpecificData.R
+        Class-SDMXStructureSpecificTimeSeriesData.R
         Class-SDMXCrossSectionalData.R Class-SDMXMessageGroup.R
         Class-SDMXDataFlow.R Class-SDMXDataFlows.R
         Class-SDMXRequestParams.R Class-SDMXRequestBuilder.R
@@ -48,6 +49,7 @@ Collate: Class-SDMXSchema.R Class-SDMXType.R Class-SDMXStructureType.R
         SDMXDataStructureDefinition-methods.R SDMXData-methods.R
         SDMXGenericData-methods.R SDMXCompactData-methods.R
         SDMXUtilityData-methods.R SDMXStructureSpecificData-methods.R
+        SDMXStructureSpecificTimeSeriesData-methods.R
         SDMXCrossSectionalData-methods.R SDMXMessageGroup-methods.R
         SDMXDataFlow-methods.R SDMXDataFlows-methods.R
         SDMXRequestParams-methods.R SDMXRequestBuilder-methods.R
@@ -57,8 +59,8 @@ Collate: Class-SDMXSchema.R Class-SDMXType.R Class-SDMXStructureType.R
         SDMXServiceProvider-methods.R SDMXServiceProviders-methods.R
         readSDMX.R profile.R rsdmx.R
 NeedsCompilation: no
-Packaged: 2016-06-17 18:45:02 UTC; Emmanuel
+Packaged: 2016-08-17 10:36:43 UTC; Emmanuel
 Author: Emmanuel Blondel [aut, cre],
   Matthieu Stigler [ctb]
 Repository: CRAN
-Date/Publication: 2016-06-18 10:05:09
+Date/Publication: 2016-08-17 13:23:35

@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/opensdmx/rsdmx.svg?branch=master)](https://travis-ci.org/opensdmx/rsdmx)
 [![codecov.io](http://codecov.io/github/opensdmx/rsdmx/coverage.svg?branch=master)](http://codecov.io/github/opensdmx/rsdmx?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/rsdmx)](http://cran.r-project.org/package=rsdmx)
-[![Github_Status_Badge](https://img.shields.io/badge/Github-0.5--4-blue.svg)](https://github.com/opensdmx/rsdmx)
+[![Github_Status_Badge](https://img.shields.io/badge/Github-0.5--5-blue.svg)](https://github.com/opensdmx/rsdmx)
 
 ``rsdmx``: Tools for reading SDMX data and metadata documents in R
 
@@ -28,7 +28,7 @@ It is already possible to query well-known datasources, using the embedded [help
 
 ### Status
 At now, the package allows to read:
-* Datasets (``GenericData``, ``CompactData``, ``StructureSpecificData``, ``CrossSectionalData``, ``UtilityData`` and ``MessageGroup`` SDMX-ML types)
+* Datasets (``GenericData``, ``CompactData``, ``StructureSpecificData``, ``StructureSpecificTimeSeriesData``, ``CrossSectionalData``, ``UtilityData`` and ``MessageGroup`` SDMX-ML types)
 * Concepts (``Concept``, ``ConceptScheme`` and ``Concepts`` SDMX-ML types)
 * Codelists (``Code``, ``Codelist`` and ``Codelists`` SDMX-ML types)
 * DataStructures / KeyFamilies - with all subtypes
@@ -40,7 +40,7 @@ At now, the package allows to read:
 
 ### Citation
 
-We thank in advance people that use ``rsdmx`` for citing it in their work / publication(s). For this, please use the citation provided at this link [![DOI](https://zenodo.org/badge/5183/opensdmx/rsdmx.svg)](https://zenodo.org/badge/latestdoi/5183/opensdmx/rsdmx)
+We thank in advance people that use ``rsdmx`` for citing it in their work / publication(s). For this, please use the citation provided at this link [![DOI](https://zenodo.org/badge/5183/opensdmx/rsdmx.svg)](http://dx.doi.org/10.5281/zenodo.31805)
 
 ### Distribution
 

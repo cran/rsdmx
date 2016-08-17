@@ -30,31 +30,45 @@ as.data.frame.SDMXAllCompactData <- function(x, nsExpr, labels = FALSE, ...) {
   hasAuthorityNS <- FALSE
   nsDefs.df <- getNamespaces(x)
   ns <- findNamespace(nsDefs.df, nsExpr)
+  if(length(ns) > 1) ns <- ns[1]
   
-  authorityNs <- nsDefs.df[
+  authorityNamespaces <- nsDefs.df[
     regexpr("http://www.sdmx.org", nsDefs.df$uri,
             "match.length", ignore.case = TRUE) == -1,]
-  authorityNs <- as.data.frame(authorityNs, stringsAsFactors = FALSE)
-  colnames(authorityNs) <- "uri"
+  authorityNamespaces <- as.data.frame(authorityNamespaces, stringsAsFactors = FALSE)
+  colnames(authorityNamespaces) <- "uri"
   
-  if(nrow(authorityNs) > 0){
+  if(nrow(authorityNamespaces) > 0){
+    nsIdx <- 1
     hasAuthorityNS <- TRUE
-    if(nrow(authorityNs) > 1){
-      warning("More than one target dataset namespace found!")
-      authorityNs <- authorityNs[1L,]
+    if(nrow(authorityNamespaces) > 1){
+      authorityNs <- authorityNamespaces[nsIdx,]
       authorityNs <- as.data.frame(authorityNs, stringsAsFactors = FALSE)
       colnames(authorityNs) <- "uri"
+    }else{
+      authorityNs <- authorityNamespaces
     }
   }
   
   if(hasAuthorityNS){
+    #try to get series with authority namespaces
     seriesXML <- getNodeSet(xmlObj, "//ns:Series", namespaces = c(ns = authorityNs$uri))
+    while(nsIdx <= nrow(authorityNamespaces) && length(seriesXML) == 0){
+      nsIdx <- nsIdx + 1
+      authorityNs <- authorityNamespaces[nsIdx,]
+      authorityNs <- as.data.frame(authorityNs, stringsAsFactors = FALSE)
+      colnames(authorityNs) <- "uri"
+      seriesXML <- getNodeSet(xmlObj, "//ns:Series", namespaces = c(ns = authorityNs$uri))
+    }
+    
     if(length(seriesXML) == 0){
-      seriesXML <- getNodeSet(xmlObj, "//ns:Series", namespaces = ns)
+      seriesXML <- try(getNodeSet(xmlObj, "//ns:Series", namespaces = ns), silent = TRUE)
+      if(class(seriesXML) == "try-error") seriesXML <- list()
     }
   }else{
     if(length(ns) > 0){
-      seriesXML <- getNodeSet(xmlObj, "//ns:Series", namespaces = ns)
+      seriesXML <- try(getNodeSet(xmlObj, "//ns:Series", namespaces = ns), silent = TRUE)
+      if(class(seriesXML) == "try-error") seriesXML <- list()
     }else{
       if(nrow(nsDefs.df) > 0){
         serieNs <- nsDefs.df[1,]

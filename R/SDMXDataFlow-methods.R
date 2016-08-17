@@ -83,6 +83,8 @@ SDMXDataFlow <- function(xmlObj, namespaces){
     sapply(flowNamesXML,
            function(x){
              lang <- xmlGetAttr(x,"xml:lang")
+             if(is.null(lang)) lang <- xmlGetAttr(x,"lang")
+             if(is.null(lang)) lang <- "default"
              flowNames[[lang]] <- xmlValue(x)
            })
     flowNames <- as.list(flowNames)
@@ -113,6 +115,8 @@ SDMXDataFlow <- function(xmlObj, namespaces){
     sapply(flowDesXML,
            function(x){
              lang <- xmlGetAttr(x,"xml:lang")
+             if(is.null(lang)) lang <- xmlGetAttr(x,"lang")
+             if(is.null(lang)) lang <- "default"
              flowDescriptions[[lang]] <- xmlValue(x)
            })
     flowDescriptions <- as.list(flowDescriptions)
@@ -157,6 +161,7 @@ SDMXDataFlow <- function(xmlObj, namespaces){
             #elements,
             Name = flowNames,
             Description = flowDescriptions,
-            dsdRef = dsdRef
+            dsdRef = dsdRef,
+            dsd = NULL
   )
 }

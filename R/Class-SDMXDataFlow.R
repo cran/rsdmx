@@ -17,6 +17,7 @@
 #' @slot Name Object of class "list" giving the dataflow (by available language) - required
 #' @slot Description Object of class "list" giving the dataflow description (by available language)
 #' @slot dsdRef Object of class "character" giving the reference datastructure Id
+#' @slot dsd Object of class "SDMXDataStructureDefinition"
 #'
 #' @section Warning:
 #' This class is not useful in itself, but all SDMX non-abstract classes will 
@@ -41,7 +42,8 @@ setClass("SDMXDataFlow",
            #elements
            Name = "list", #at least one
            Description = "list", #optional
-           dsdRef = "character"
+           dsdRef = "character",
+           dsd = "SDMXDataStructureDefinition_OR_NULL"
          ),
          prototype = list(
            #attributes
@@ -64,7 +66,8 @@ setClass("SDMXDataFlow",
              en = "dataflow description",
              fr = "description du dataflow"
            ),
-           dsdRef = "someId"
+           dsdRef = "someId",
+           dsd = NULL
          ),
          validity = function(object){
            
