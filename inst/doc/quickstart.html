@@ -234,7 +234,7 @@ hr {
 
 <h2>How to deal with SDMX in R</h2>
 
-<p><a href="http://cran.r-project.org/package=rsdmx">rsdmx</a> offers a low-level set of tools to read <strong>data</strong> and <strong>metadata</strong> in the SDMX-ML format. Its strategy is to make it very easy for the user. For this, a unique function named <code>readSDMX</code> has to be used, whatever it is a <code>data</code> or <code>metadata</code> document, or if it is <code>local</code> or <code>remote</code> datasource.</p>
+<p><a href="https://cran.r-project.org/package=rsdmx">rsdmx</a> offers a low-level set of tools to read <strong>data</strong> and <strong>metadata</strong> in the SDMX-ML format. Its strategy is to make it very easy for the user. For this, a unique function named <code>readSDMX</code> has to be used, whatever it is a <code>data</code> or <code>metadata</code> document, or if it is <code>local</code> or <code>remote</code> datasource.</p>
 
 <p>What <code>rsdmx</code> does support:</p>
 
@@ -315,7 +315,7 @@ as.data.frame(providers)
 ## 10      national     AUS SDMXDotStatRequestBuilder     FALSE
 ## 11      national     BEL SDMXDotStatRequestBuilder     FALSE
 ## 12      national     FRA  SDMXREST21RequestBuilder      TRUE
-## 13      national     MEX  SDMXREST20RequestBuilder     FALSE
+## 13      national     MEX  SDMXREST21RequestBuilder     FALSE
 ## 14      national     ITA  SDMXREST21RequestBuilder      TRUE
 ## 15 international    &lt;NA&gt;        SDMXRequestBuilder     FALSE
 </code></pre>
@@ -335,8 +335,8 @@ head(df)
 ## 2 TOT B11 WMN AUS         P1Y    2011   108865       &lt;NA&gt;
 ## 3 TOT B11 TOT AUS         P1Y    2010   206714       &lt;NA&gt;
 ## 4 TOT B11 TOT AUS         P1Y    2011   210704       &lt;NA&gt;
-## 5 TOT B12 TOT AUS         P1Y    2010    29307       &lt;NA&gt;
-## 6 TOT B12 TOT AUS         P1Y    2011    31204       &lt;NA&gt;
+## 5 TOT B12 TOT AUS         P1Y    2010    29320       &lt;NA&gt;
+## 6 TOT B12 TOT AUS         P1Y    2011    31232       &lt;NA&gt;
 </code></pre>
 
 <p>It is also possible to query a dataset together with its &ldquo;definition&rdquo;, handled
@@ -360,36 +360,36 @@ head(df)
 ## 2 TOT        Total        Total B11
 ## 3 TOT        Total        Total B11
 ## 4 TOT        Total        Total B11
-## 5 TOT        Total        Total B11
-## 6 TOT        Total        Total B11
+## 5 TOT        Total        Total B12
+## 6 TOT        Total        Total B12
 ##                                      VAR_label.fr
 ## 1 Entrées de personnes étrangères par nationalité
 ## 2 Entrées de personnes étrangères par nationalité
 ## 3 Entrées de personnes étrangères par nationalité
 ## 4 Entrées de personnes étrangères par nationalité
-## 5 Entrées de personnes étrangères par nationalité
-## 6 Entrées de personnes étrangères par nationalité
-##                                   VAR_label.en GEN GEN_label.fr
-## 1 Inflows of foreign population by nationality TOT        Total
-## 2 Inflows of foreign population by nationality TOT        Total
-## 3 Inflows of foreign population by nationality TOT        Total
-## 4 Inflows of foreign population by nationality TOT        Total
-## 5 Inflows of foreign population by nationality TOT        Total
-## 6 Inflows of foreign population by nationality TOT        Total
+## 5 Sorties de personnes étrangères par nationalité
+## 6 Sorties de personnes étrangères par nationalité
+##                                    VAR_label.en GEN GEN_label.fr
+## 1  Inflows of foreign population by nationality WMN       Femmes
+## 2  Inflows of foreign population by nationality WMN       Femmes
+## 3  Inflows of foreign population by nationality TOT        Total
+## 4  Inflows of foreign population by nationality TOT        Total
+## 5 Outflows of foreign population by nationality TOT        Total
+## 6 Outflows of foreign population by nationality TOT        Total
 ##   GEN_label.en COU COU_label.fr COU_label.en TIME_FORMAT
-## 1        Total AUS    Australie    Australia         P1Y
-## 2        Total AUS    Australie    Australia         P1Y
+## 1        Women AUS    Australie    Australia         P1Y
+## 2        Women AUS    Australie    Australia         P1Y
 ## 3        Total AUS    Australie    Australia         P1Y
 ## 4        Total AUS    Australie    Australia         P1Y
 ## 5        Total AUS    Australie    Australia         P1Y
 ## 6        Total AUS    Australie    Australia         P1Y
 ##   TIME_FORMAT_label.en obsTime obsValue OBS_STATUS OBS_STATUS_label.en
-## 1               Annual    2010   107740          e     Estimated value
-## 2               Annual    2011   108865          e     Estimated value
-## 3               Annual    2010   206714          e     Estimated value
+## 1               Annual    2010   107740       &lt;NA&gt;                &lt;NA&gt;
+## 2               Annual    2011   108865       &lt;NA&gt;                &lt;NA&gt;
+## 3               Annual    2010   206714       &lt;NA&gt;                &lt;NA&gt;
 ## 4               Annual    2011   210704       &lt;NA&gt;                &lt;NA&gt;
-## 5               Annual    2010    29307       &lt;NA&gt;                &lt;NA&gt;
-## 6               Annual    2011    31204       &lt;NA&gt;                &lt;NA&gt;
+## 5               Annual    2010    29320       &lt;NA&gt;                &lt;NA&gt;
+## 6               Annual    2011    31232       &lt;NA&gt;                &lt;NA&gt;
 </code></pre>
 
 <p>Note that in case you are reading SDMX-ML documents with the native approach (with
@@ -433,7 +433,12 @@ stats &lt;- as.data.frame(sdmx)
 
 <pre><code class="r">csUrl &lt;- &quot;http://data.fao.org/sdmx/registry/conceptscheme/FAO/ALL/LATEST/?detail=full&amp;references=none&amp;version=2.1&quot;
 csobj &lt;- readSDMX(csUrl)
-csdf &lt;- as.data.frame(csobj)
+</code></pre>
+
+<pre><code>## &lt;simpleError in doTryCatch(return(expr), name, parentenv, handler): The SDMX web-request failed. Please retry&gt;
+</code></pre>
+
+<pre><code class="r">csdf &lt;- as.data.frame(csobj)
 </code></pre>
 
 <h3>Codelists</h3>
