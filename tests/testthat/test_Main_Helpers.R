@@ -8,6 +8,34 @@ require(rsdmx, quietly = TRUE)
 require(testthat)
 context("SDMXHelpers")
 
+#testing main helpers arguments
+
+#-> dataflow
+test_that("Main helpers arguments",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  
+  #existing provider
+  providerId1 <- "IMF"
+  provider1 <- findSDMXServiceProvider(providerId1)
+  sdmx <- readSDMX(provider = provider1, resource = "dataflow")
+  expect_false(is.null(sdmx))
+  expect_is(sdmx, "SDMXDataFlows")
+  sdmx <- readSDMX(providerId = providerId1, resource = "dataflow")
+  expect_false(is.null(sdmx))
+  expect_is(sdmx, "SDMXDataFlows")
+  
+  #wrong provider
+  providerId2 <- "IMF!"
+  provider2 <- findSDMXServiceProvider(providerId2)
+  expect_error(readSDMX(provider = provider2, resource = "dataflow"), "Provider should be an instance of 'SDMXServiceProvider'")
+  expect_error(readSDMX(providerId = providerId2, resource = "dataflow"), "No provider with identifier IMF!")
+  
+  #wrong request
+  expect_error(readSDMX(providerId = "KNOEMA", resource = "data", flowRef = "SADG2015-WRONG"),
+               "HTTP request failed with status: 400 Dataset not found.")
+  
+})
 
 #international data providers
 
@@ -88,7 +116,7 @@ test_that("ESTAT - data",{
 test_that("IMF - dataflow",{
   testthat::skip_on_travis()
   testthat::skip_on_cran()
-  sdmx <- readSDMX(providerId = "IMF", resource = "dataflow")
+  sdmx <- readSDMX(providerId = "IMF", resource = "dataflow", agencyId = "IMF")
   if(!is.null(sdmx)){
     expect_is(sdmx, "SDMXDataFlows")
   }
@@ -98,7 +126,7 @@ test_that("IMF - dataflow",{
 test_that("IMF - datastructure",{
   testthat::skip_on_travis()
   testthat::skip_on_cran()
-  sdmx <- readSDMX(providerId = "IMF", resource = "datastructure", resourceId = "PGI")
+  sdmx <- readSDMX(providerId = "IMF", resource = "datastructure", resourceId = "BOP")
   if(!is.null(sdmx)){
     expect_is(sdmx, "SDMXDataStructureDefinition")
   }
@@ -109,10 +137,9 @@ test_that("IMF - data",{
   testthat::skip_on_travis()
   testthat::skip_on_cran()
   sdmx <- readSDMX(providerId = "IMF", resource = "data",
-                   flowRef = "PGI", key = "US+JP+CN+GB+CA+FR.PCPI.PGI.PCOCY.A",
-                   key.mode = "SDMX", start = 1985, end = 2015) 
+                   flowRef = "BOP_GBPM6", start = 2010, end = 2015) 
   if(!is.null(sdmx)){
-    expect_is(sdmx, "SDMXGenericData")
+    expect_is(sdmx, "SDMXStructureSpecificData")
   }
 })
 
@@ -267,6 +294,52 @@ test_that("UIS - data",{
                    start = "2000", end = "2015")
   if(!is.null(sdmx)){
     expect_is(sdmx, "SDMXMessageGroup")
+  }
+})
+
+#UIS2 (UNESCO - new API https://apiportal.uis.unesco.org)
+#------------
+
+#-> dataflow
+test_that("UIS2 - dataflow",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  
+  apiKey <- Sys.getenv("UIS_API_KEY")
+  if(apiKey != ""){
+    sdmx <- readSDMX(providerId = "UIS2", providerKey = apiKey, resource = "dataflow")
+    if(!is.null(sdmx)){
+      expect_is(sdmx, "SDMXDataFlows")
+    }
+  }
+})
+
+#-> datastructure
+test_that("UIS2 - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  
+  apiKey <- Sys.getenv("UIS_API_KEY")
+  if(apiKey != ""){
+    sdmx <- readSDMX(providerId = "UIS2", providerKey = apiKey, resource = "datastructure", resourceId = "CE")
+    if(!is.null(sdmx)){
+      expect_is(sdmx, "SDMXDataStructureDefinition")
+    }
+  }
+})
+
+#-> data
+test_that("UIS2 - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  
+  apiKey <- Sys.getenv("UIS_API_KEY")
+  if(apiKey != ""){
+    sdmx <- readSDMX(providerId = "UIS2", providerKey = apiKey, resource = "data",
+                     flowRef = "CE", start = "2000", end = "2015")
+    if(!is.null(sdmx)){
+      expect_is(sdmx, "SDMXStructureSpecificData")
+    }
   }
 })
 
@@ -461,6 +534,39 @@ test_that("ISTAT - data",{
   }
 })
 
+#NOMIS (UK)
+#----------
+
+#-> dataflow
+test_that("NOMIS - dataflow",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "NOMIS", resource = "dataflow")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataFlows")
+  }
+})
+
+#-> datastructure
+test_that("NOMIS - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "NOMIS", resource = "datastructure", resourceId = "NM_1_1")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("NOMIS - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "NOMIS", resource = "data", flowRef="NM_1_1")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXGenericData")
+  }
+})
+
 #other data providers
 
 #KNOEMA
@@ -491,6 +597,42 @@ test_that("KNOEMA - data",{
   testthat::skip_on_travis()
   testthat::skip_on_cran()
   sdmx <- readSDMX(providerId = "KNOEMA", resource = "data", flowRef = "SADG2015")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXStructureSpecificData")
+  }
+})
+
+#WIDUKIND
+#--------
+
+#-> dataflow
+test_that("WIDUKIND - dataflow",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "WIDUKIND", resource = "dataflow")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataFlows")
+  }
+})
+
+#-> datastructure
+test_that("WIDUKIND - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "WIDUKIND", resource = "datastructure",
+                   agencyId = "INSEE", resourceId = "POP-EVO")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("WIDUKIND - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "WIDUKIND", resource = "data", agencyId = "INSEE",
+                   flowRef = "IPCH-2015-FR-COICOP", key = "a.07120.indice", key.mode="SDMX",
+                   start = 2010, end = 2015)
   if(!is.null(sdmx)){
     expect_is(sdmx, "SDMXStructureSpecificData")
   }

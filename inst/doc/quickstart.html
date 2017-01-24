@@ -286,38 +286,63 @@ stats &lt;- as.data.frame(dataset)
 as.data.frame(providers)
 </code></pre>
 
-<pre><code>##    agencyId                                                          name
-## 1       ECB                                         European Central Bank
-## 2     ESTAT           Eurostat (Statistical office of the European Union)
-## 3       IMF                                   International Monetary Fund
-## 4      OECD        Organisation for Economic Cooperation and Development 
-## 5      UNSD                            United Nations Statistics Division
-## 6       FAO       Food and Agriculture Organization of the United Nations
-## 7       ILO       International Labour Organization of the United Nations
-## 8       UIS                                UNESCO Institute of Statistics
-## 9  WBG_WITS                               World Integrated Trade Solution
-## 10      ABS                               Australian Bureau of Statistics
-## 11      NBB                                      National Bank of Belgium
-## 12    INSEE Institut national de la statistique et des études économiques
-## 13    INEGI        Instituto Nacional de Estadística y Geografía (Méjico)
-## 14    ISTAT                     Istituto nazionale di statistica (Italia)
-## 15   KNOEMA                                    KNOEMA knowledge plateform
+<pre><code>##    agencyId
+## 1       ECB
+## 2     ESTAT
+## 3       IMF
+## 4      OECD
+## 5      UNSD
+## 6       FAO
+## 7       ILO
+## 8       UIS
+## 9      UIS2
+## 10 WBG_WITS
+## 11      ABS
+## 12      NBB
+## 13    INSEE
+## 14    INEGI
+## 15    ISTAT
+## 16    NOMIS
+## 17   KNOEMA
+## 18 WIDUKIND
+##                                                                 name
+## 1                                              European Central Bank
+## 2                Eurostat (Statistical office of the European Union)
+## 3                                        International Monetary Fund
+## 4             Organisation for Economic Cooperation and Development 
+## 5                                 United Nations Statistics Division
+## 6            Food and Agriculture Organization of the United Nations
+## 7            International Labour Organization of the United Nations
+## 8  UNESCO Institute of Statistics (old - http://data.uis.unesco.org)
+## 9   UNESCO Institute of Statistics (new - http://api.uis.unesco.org)
+## 10                                   World Integrated Trade Solution
+## 11                                   Australian Bureau of Statistics
+## 12                                          National Bank of Belgium
+## 13     Institut national de la statistique et des études économiques
+## 14            Instituto Nacional de Estadística y Geografía (Méjico)
+## 15                         Istituto nazionale di statistica (Italia)
+## 16                      NOMIS - UK Official Labour Market Statistics
+## 17                                        KNOEMA knowledge plateform
+## 18               Widukind project - International Economics Database
 ##            scale country                   builder compliant
 ## 1  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
 ## 2  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
-## 3  international    &lt;NA&gt;  SDMXREST20RequestBuilder     FALSE
+## 3  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
 ## 4  international    &lt;NA&gt; SDMXDotStatRequestBuilder     FALSE
 ## 5  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
 ## 6  international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
 ## 7  international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
 ## 8  international    &lt;NA&gt; SDMXDotStatRequestBuilder     FALSE
 ## 9  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
-## 10      national     AUS SDMXDotStatRequestBuilder     FALSE
-## 11      national     BEL SDMXDotStatRequestBuilder     FALSE
-## 12      national     FRA  SDMXREST21RequestBuilder      TRUE
-## 13      national     MEX  SDMXREST21RequestBuilder     FALSE
-## 14      national     ITA  SDMXREST21RequestBuilder      TRUE
-## 15 international    &lt;NA&gt;        SDMXRequestBuilder     FALSE
+## 10 international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
+## 11      national     AUS SDMXDotStatRequestBuilder     FALSE
+## 12      national     BEL SDMXDotStatRequestBuilder     FALSE
+## 13      national     FRA  SDMXREST21RequestBuilder      TRUE
+## 14      national     MEX  SDMXREST21RequestBuilder     FALSE
+## 15      national     ITA  SDMXREST21RequestBuilder      TRUE
+## 16      national      UK        SDMXRequestBuilder     FALSE
+## 17 international    &lt;NA&gt;        SDMXRequestBuilder     FALSE
+## 18 international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
 </code></pre>
 
 <p>Note it is also possible to add an SDMX service provider at runtime. For registering a new SDMX service provider by default, please contact me!</p>
@@ -392,6 +417,11 @@ head(df)
 ## 6               Annual    2011    31232       &lt;NA&gt;                &lt;NA&gt;
 </code></pre>
 
+<p>For embedded service providers that require a user authentication/subscription key or token,
+it is possible to specify it in <code>readSDMX</code> with the <code>providerKey</code> argument. If provided,
+and that the embedded provider requires a specific key parameter, the latter will be appended
+to the SDMX web-request. For example, it&#39;s the case for the new <a href="UNESCO%20SDMX%20API">https://apiportal.uis.unesco.org/getting-started</a>.</p>
+
 <p>Note that in case you are reading SDMX-ML documents with the native approach (with
 URLs), instead of the embedded providers, it is also possible to associate a DSD
 to a dataset by using the function <code>setDSD</code>. Let&#39;s try how it works:</p>
@@ -427,20 +457,6 @@ stats &lt;- as.data.frame(sdmx)
 
 <p>This section will introduce you on how to read SDMX <strong>metadata</strong> documents, including <code>concepts</code>, <code>codelists</code> and a complete <code>data structure definition</code> (DSD)</p>
 
-<h3>Concepts</h3>
-
-<p>Read concept schemes from <a href="http://data.fao.org/sdmx/index.html">FAO data portal</a></p>
-
-<pre><code class="r">csUrl &lt;- &quot;http://data.fao.org/sdmx/registry/conceptscheme/FAO/ALL/LATEST/?detail=full&amp;references=none&amp;version=2.1&quot;
-csobj &lt;- readSDMX(csUrl)
-</code></pre>
-
-<pre><code>## &lt;simpleError in doTryCatch(return(expr), name, parentenv, handler): The SDMX web-request failed. Please retry&gt;
-</code></pre>
-
-<pre><code class="r">csdf &lt;- as.data.frame(csobj)
-</code></pre>
-
 <h3>Codelists</h3>
 
 <p>Read codelists from <a href="http://data.fao.org/sdmx/index.html">FAO data portal</a></p>
@@ -475,6 +491,17 @@ codelist &lt;- as.data.frame(slot(dsd, &quot;codelists&quot;), codelistId = &quo
 <pre><code class="r">#get concepts from DSD
 concepts &lt;- as.data.frame(slot(dsd, &quot;concepts&quot;))
 </code></pre>
+
+<h2>Save &amp; Reload SDMX R objects</h2>
+
+<p>It is possible to save SDMX R objects as RData file (.RData, .rda, .rds), to then
+be able to reload them into the R session. It could be of added value for users that
+want to keep their SDMX objects in R data files, but also for fast loading of large SDMX
+objects (e.g. DSD objects) for use in statistical analyses and R-based web-applications.</p>
+
+<p>To save a SDMX R object to RData file:</p>
+
+<p>To reload a SDMX R object from RData file:</p>
 
 </body>
 

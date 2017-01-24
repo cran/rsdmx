@@ -110,6 +110,11 @@ df <- as.data.frame(sdmx, labels = TRUE)
 head(df)
 ```
 
+For embedded service providers that require a user authentication/subscription key or token,
+it is possible to specify it in ``readSDMX`` with the ``providerKey`` argument. If provided,
+and that the embedded provider requires a specific key parameter, the latter will be appended
+to the SDMX web-request. For example, it's the case for the new [https://apiportal.uis.unesco.org/getting-started](UNESCO SDMX API).
+
 Note that in case you are reading SDMX-ML documents with the native approach (with
 URLs), instead of the embedded providers, it is also possible to associate a DSD
 to a dataset by using the function ``setDSD``. Let's try how it works:
@@ -149,17 +154,6 @@ By default, ``readSDMX`` considers the data source is remote. To read a local fi
 
 This section will introduce you on how to read SDMX **metadata** documents, including ``concepts``, ``codelists`` and a complete ``data structure definition`` (DSD)
 
-
-### Concepts
-
-Read concept schemes from [FAO data portal](http://data.fao.org/sdmx/index.html)
-
-```{r, warning=FALSE}
-csUrl <- "http://data.fao.org/sdmx/registry/conceptscheme/FAO/ALL/LATEST/?detail=full&references=none&version=2.1"
-csobj <- readSDMX(csUrl)
-csdf <- as.data.frame(csobj)
-```
-
 ### Codelists
 
 Read codelists from [FAO data portal](http://data.fao.org/sdmx/index.html)
@@ -196,4 +190,23 @@ In a similar way, the ``concepts`` of the dataset can be extracted from the DSD 
 ```{r}
 #get concepts from DSD
 concepts <- as.data.frame(slot(dsd, "concepts"))
+```
+
+## Save & Reload SDMX R objects
+
+It is possible to save SDMX R objects as RData file (.RData, .rda, .rds), to then
+be able to reload them into the R session. It could be of added value for users that
+want to keep their SDMX objects in R data files, but also for fast loading of large SDMX
+objects (e.g. DSD objects) for use in statistical analyses and R-based web-applications.
+
+To save a SDMX R object to RData file:
+
+```{r, echo = FALSE}
+saveSDMX(sdmx, "tmp.RData")
+```
+
+To reload a SDMX R object from RData file:
+
+```{r, echo = FALSE}
+sdmx <- readSDMX("tmp.RData", isRData = TRUE)
 ```

@@ -3,8 +3,9 @@
 #' @title readSDMX
 #' @description \code{readSDMX} is the main function to use to read SDMX data
 #'
-#' @usage readSDMX(file, isURL,
-#'                 provider, providerId, agencyId, resource, resourceId, version,
+#' @usage readSDMX(file, isURL, isRData,
+#'                 provider, providerId, providerKey, 
+#'                 agencyId, resource, resourceId, version,
 #'                 flowRef, key, key.mode, start, end, dsd, validate, verbose)
 #'                 
 #' @param file path to SDMX-ML document that needs to be parsed
@@ -12,10 +13,16 @@
 #'        has to be downloaded from a SDMXweb-repository. Default value is TRUE.
 #'        Ignored in case \code{readSDMX} is used with helpers (based on the 
 #'        embedded list of \code{SDMXServiceProvider})
+#' @param isRData a value of class "logical" either the path is local RData file
+#'        handling an object of class "SDMX", previously saved with \code{\link{saveSDMX}}.
+#'        Default value is FALSE.
 #' @param provider an object of class "SDMXServiceProvider". If specified, 
 #'        \code{file} and \code{isURL} arguments will be ignored.      
 #' @param providerId an object of class "character" representing a provider id. 
 #'        It has to be match a default provider as listed in\code{getSDMXServiceProviders()}
+#' @param providerKey an object of class "character" giving a key to authenticate
+#'        for the given provider endpoint. Some providers may require an authentication or
+#'        subscription key to perform SDMX requests.
 #' @param agencyId an object of class "character representing an agency id, for
 #'        which data should be requested (from a particular service provider)      
 #' @param resource an object of class "character" giving the SDMX service request 
@@ -83,28 +90,14 @@
 #'    #examples using 'file' argument
 #'    #using url (Eurostat REST SDMX 2.1)
 #'    url <- paste("http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/",
-#'                  "cdh_e_fos/..PC.FOS1.BE/?startperiod=2011&endPeriod=2011",
-#'                  sep = "")
+#'                 "cdh_e_fos/all/?startperiod=2011&endPeriod=2011",
+#'                 sep = "")
 #'    sdmx <- readSDMX(url)
 #'    stats <- as.data.frame(sdmx)
 #'    head(stats)
 #'    
 #'    ## End(**Not run**)
-#'  }
-#'  
-#'  # SDMX Concepts / ConceptSchemes
-#'  #-------------------------------
-#'  \donttest{
-#'    # Not run by 'R CMD check'
-#'    # (reliable remote datasource but with possible occasional unavailability)
-#'    csUrl <- paste("http://data.fao.org/sdmx/registry/conceptscheme",
-#'                   "/FAO/ALL/LATEST/?detail=full&references=none&version=2.1",
-#'                   sep = "")
-#'    csobj <- readSDMX(csUrl)
-#'    csdf <- as.data.frame(csobj)
-#'    head(csdf)
-#'    ## End(**Not run**)
-#'  }
+#'  }  
 #'  
 #'  # SDMX Codelists
 #'  #---------------
@@ -144,14 +137,15 @@
 #' @author Emmanuel Blondel, \email{emmanuel.blondel1@@gmail.com}
 #'    
 
-readSDMX <- function(file = NULL, isURL = TRUE,
-                     provider = NULL, providerId = NULL,
+readSDMX <- function(file = NULL, isURL = TRUE, isRData = FALSE,
+                     provider = NULL, providerId = NULL, providerKey = NULL,
                      agencyId = NULL, resource = NULL, resourceId = NULL, version = NULL,
                      flowRef = NULL, key = NULL, key.mode = "R", start = NULL, end = NULL, dsd = FALSE,
                      validate = FALSE, verbose = TRUE) {
   
   #set option for SDMX compliance validation
-  .rsdmx.options$validate = validate
+  .rsdmx.options$validate <- validate
+  .rsdmx.options$followlocation <- TRUE
   
   if(!(key.mode %in% c("R", "SDMX"))){
     stop("Invalid value for key.mode argument. Accepted values are 'R', 'SDMX' ")
@@ -159,14 +153,16 @@ readSDMX <- function(file = NULL, isURL = TRUE,
   
   #check from arguments if request has to be performed
   buildRequest <- FALSE
-  if(!is.null(provider)){
+  if(!missing(provider)){
     if(class(provider) != "SDMXServiceProvider"){
       stop("Provider should be an instance of 'SDMXServiceProvider'")
+    }else{
+      providerId = slot(provider, "agencyId")
     }
     buildRequest <- TRUE
   }
   
-  if(!is.null(providerId)){
+  if(!missing(providerId)){
     provider <- findSDMXServiceProvider(providerId)
     if(is.null(provider)){
       stop("No provider with identifier ", providerId)
@@ -194,6 +190,7 @@ readSDMX <- function(file = NULL, isURL = TRUE,
     requestParams <- SDMXRequestParams(
                        regUrl = provider@builder@regUrl,
                        repoUrl = provider@builder@repoUrl,
+                       accessKey = providerKey,
                        providerId = providerId,
                        agencyId = agencyId,
                        resource = resource,
@@ -217,24 +214,35 @@ readSDMX <- function(file = NULL, isURL = TRUE,
                   "datastructure" = requestHandler$datastructure(requestParams),
                   "data" = requestHandler$data(requestParams)
     )
+    
     if(verbose) message(paste0("-> Fetching '", file, "'"))
   }
   
   #call readSDMX original
   if(is.null(file)) stop("Empty file argument")
   if(buildRequest) isURL = TRUE
+  if(isRData) isURL = FALSE
   
   #load data
   status <- 0
   if(isURL == FALSE){
-    if(!file.exists(file))
-      stop("File ", file, "not found\n")
-    xmlObj <- xmlTreeParse(file, useInternalNodes = TRUE)
-    status <- 1
+    isXML <- !isRData
+    if(isXML){
+      if(!file.exists(file)) stop("File ", file, "not found\n")
+      xmlObj <- xmlTreeParse(file, useInternalNodes = TRUE)
+      status <- 1
+    }
   }else{
     rsdmxAgent <- paste("rsdmx/",as.character(packageVersion("rsdmx")),sep="")
-    content <- getURL(file, httpheader = list('User-Agent' = rsdmxAgent),
-                      ssl.verifypeer = FALSE, .encoding = "UTF-8")
+    h <- RCurl::basicHeaderGatherer()
+    content <- RCurl::getURL(file, httpheader = list('User-Agent' = rsdmxAgent),
+                      ssl.verifypeer = FALSE, .encoding = "UTF-8",
+                      headerfunction = h$update)
+
+    if(as.numeric(h$value()["status"]) >= 400) {
+      stop("HTTP request failed with status: ",
+           h$value()["status"], " ", h$value()["statusMessage"])
+    }
     
     status <- tryCatch({
       if((attr(regexpr("<!DOCTYPE html>", content), "match.length") == -1) && 
@@ -334,14 +342,20 @@ readSDMX <- function(file = NULL, isURL = TRUE,
         )
       }
     }
+  }else{
+    #read SDMX object from RData file (.RData, .rda, .rds)
+    if(isRData){
+      if(!file.exists(file)) stop("File ", file, "not found\n")
+      obj <- readRDS(file, refhook = XML::xmlDeserializeHook)
+    }
   }
   
   #attempt to get DSD in case of helper method
   if(buildRequest && resource %in% c("data","dataflow") && dsd){
     
-    if(resource == "data" && providerId %in% c("ESTAT", "ISTAT", "WBG_WITS")){
+    if(resource == "data" && providerId %in% c("ESTAT", "ISTAT", "WBG_WITS", "UIS2")){
       if(verbose) message("-> Attempt to fetch DSD ref from dataflow description")
-      flow <- readSDMX(providerId = providerId, resource = "dataflow",
+      flow <- readSDMX(providerId = providerId, providerKey = providerKey, resource = "dataflow",
                       resourceId = flowRef, verbose = TRUE)
       dsdRef <- slot(slot(flow, "dataflows")[[1]],"dsdRef")
       rm(flow)
@@ -365,8 +379,8 @@ readSDMX <- function(file = NULL, isURL = TRUE,
     #fetch DSD
     dsdObj <- NULL
     if(resource == "data"){
-      dsdObj <- readSDMX(providerId = providerId, resource = "datastructure",
-                       resourceId = dsdRef, verbose = verbose)
+      dsdObj <- readSDMX(providerId = providerId, providerKey = providerKey,
+                         resource = "datastructure", resourceId = dsdRef, verbose = verbose)
       if(is.null(dsdObj)){
         if(verbose) message(sprintf("-> Impossible to fetch DSD for dataset %s", flowRef))
       }else{
@@ -375,8 +389,8 @@ readSDMX <- function(file = NULL, isURL = TRUE,
       }
     }else if(resource == "dataflow"){
       dsdObj <- lapply(1:length(dsdRef), function(x){
-        flowDsd <- readSDMX(providerId = providerId, resource = "datastructure",
-                 resourceId = dsdRef[[x]], verbose = verbose)
+        flowDsd <- readSDMX(providerId = providerId, providerKey = providerKey,
+                            resource = "datastructure", resourceId = dsdRef[[x]], verbose = verbose)
         if(is.null(flowDsd)){
           if(verbose) message(sprintf("-> Impossible to fetch DSD for dataflow %s",resourceId))
         }else{

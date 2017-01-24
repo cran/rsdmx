@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/opensdmx/rsdmx.svg?branch=master)](https://travis-ci.org/opensdmx/rsdmx)
 [![codecov.io](http://codecov.io/github/opensdmx/rsdmx/coverage.svg?branch=master)](http://codecov.io/github/opensdmx/rsdmx?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/rsdmx)](https://cran.r-project.org/package=rsdmx)
-[![Github_Status_Badge](https://img.shields.io/badge/Github-0.5--6-blue.svg)](https://github.com/opensdmx/rsdmx)
+[![Github_Status_Badge](https://img.shields.io/badge/Github-0.5--7-blue.svg)](https://github.com/opensdmx/rsdmx)
 
 ``rsdmx``: Tools for reading SDMX data and metadata documents in R
 
@@ -40,7 +40,16 @@ At now, the package allows to read:
 
 ### Citation
 
-We thank in advance people that use ``rsdmx`` for citing it in their work / publication(s). For this, please use the citation provided at this link [![DOI](https://zenodo.org/badge/5183/opensdmx/rsdmx.svg)](http://dx.doi.org/10.5281/zenodo.31805)
+We thank in advance people that use ``rsdmx`` for citing it in their work / publication(s). For this, please use the citation provided at this link [![DOI](https://zenodo.org/badge/5183/opensdmx/rsdmx.svg)](http://doi.org/10.5281/zenodo.31805)
+
+### Author
+
+Copyright (C) 2014  Emmanuel Blondel
+
+### Contributors
+
+* Matthieu Stigler
+* Eric Persson
 
 ### Distribution
 
@@ -227,9 +236,16 @@ without having to specifying a entire URL, but just by specifying the ``agencyId
 of the provider, and the different query parameters to reach your SDMX document:
 
 ```{r, echo = FALSE}
-sdmx <- readSDMX(providerId = "MYORG", resource = "data", flowRef="MYSERIE",
+sdmx <- readSDMX(providerId = "MYORG", providerKey = NULL resource = "data", flowRef="MYSERIE",
                  key = "all", key.mode = "SDMX", start = 2000, end = 2015)
 ```
+
+For embedded service providers that require a user authentication/subscription key or token,
+it is possible to specify it in ``readSDMX`` with the ``providerKey`` argument. If provided,
+and that the embedded provider requires a specific key parameter, the latter will be appended
+to the SDMX web-request. For example, it's the case for the new [https://apiportal.uis.unesco.org/getting-started](UNESCO SDMX API).
+
+
 
 The following sections will show you how to query SDMX documents, by using ``readSDMX`` 
 in different ways: either for _local_ or _remote_ files, using ``readSDMX`` as low-level 
@@ -381,4 +397,23 @@ In a similar way, the ``concepts`` of the dataset can be extracted from the DSD 
 ```{r, echo = FALSE}
 #get concepts from DSD
 concepts <- as.data.frame(slot(dsd, "concepts"))
+```
+
+### Save & Reload SDMX R objects
+
+It is possible to save SDMX R objects as RData file (.RData, .rda, .rds), to then
+be able to reload them into the R session. It could be of added value for users that
+want to keep their SDMX objects in R data files, but also for fast loading of large SDMX
+objects (e.g. DSD objects) for use in statistical analyses and R-based web-applications.
+
+To save a SDMX R object to RData file:
+
+```{r, echo = FALSE}
+saveSDMX(sdmx, "tmp.RData")
+```
+
+To reload a SDMX R object from RData file:
+
+```{r, echo = FALSE}
+sdmx <- readSDMX("tmp.RData", isRData = TRUE)
 ```

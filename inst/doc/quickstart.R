@@ -48,11 +48,6 @@ sdmx <- readSDMX(sdmx_files[2], isURL = FALSE)
 stats <- as.data.frame(sdmx)
 
 
-## ---- warning=FALSE------------------------------------------------------
-csUrl <- "http://data.fao.org/sdmx/registry/conceptscheme/FAO/ALL/LATEST/?detail=full&references=none&version=2.1"
-csobj <- readSDMX(csUrl)
-csdf <- as.data.frame(csobj)
-
 ## ------------------------------------------------------------------------
 clUrl <- "http://data.fao.org/sdmx/registry/codelist/FAO/CL_FAO_MAJOR_AREA/0.1"
 clobj <- readSDMX(clUrl)
@@ -75,4 +70,10 @@ codelist <- as.data.frame(slot(dsd, "codelists"), codelistId = "CL_TABLE1_FLOWS"
 ## ------------------------------------------------------------------------
 #get concepts from DSD
 concepts <- as.data.frame(slot(dsd, "concepts"))
+
+## ---- echo = FALSE-------------------------------------------------------
+saveSDMX(sdmx, "tmp.RData")
+
+## ---- echo = FALSE-------------------------------------------------------
+sdmx <- readSDMX("tmp.RData", isRData = TRUE)
 
