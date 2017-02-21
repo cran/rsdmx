@@ -229,8 +229,7 @@ readSDMX <- function(file = NULL, isURL = TRUE, isRData = FALSE,
     isXML <- !isRData
     if(isXML){
       if(!file.exists(file)) stop("File ", file, "not found\n")
-      xmlObj <- xmlTreeParse(file, useInternalNodes = TRUE)
-      status <- 1
+      content <- readChar(file, file.info(file)$size)
     }
   }else{
     rsdmxAgent <- paste("rsdmx/",as.character(packageVersion("rsdmx")),sep="")
@@ -243,31 +242,37 @@ readSDMX <- function(file = NULL, isURL = TRUE, isRData = FALSE,
       stop("HTTP request failed with status: ",
            h$value()["status"], " ", h$value()["statusMessage"])
     }
-    
-    status <- tryCatch({
-      if((attr(regexpr("<!DOCTYPE html>", content), "match.length") == -1) && 
-         (attr(regexpr("<html>", content), "match.length") == -1)){
-        
-        #check the presence of a BOM
-        BOM <- "\ufeff"
-        if(attr(regexpr(BOM, content), "match.length") != - 1){
-          content <- gsub(BOM, "", content)
-        }
-        
-        #check presence of XML comments
-        content <- gsub("<!--.*?-->", "", content)
-        
-        xmlObj <- xmlTreeParse(content, useInternalNodes = TRUE)
-        status <- 1
-      }else{
-        stop("The SDMX web-request failed. Please retry")
-      }
-    },error = function(err){
-      print(err)
-      status <<- 0
-      return(status)
-    })
   }
+    
+  status <- tryCatch({
+    if((attr(regexpr("<!DOCTYPE html>", content), "match.length") == -1) && 
+       (attr(regexpr("<html>", content), "match.length") == -1)){
+      
+      #check the presence of a BOM
+      BOM <- "\ufeff"
+      if(attr(regexpr(BOM, content), "match.length") != - 1){
+        content <- gsub(BOM, "", content)
+      }
+      
+      #check presence of XML comments
+      content <- gsub("<!--.*?-->", "", content)
+      
+      #check presence of invalid XML entities
+      content <- gsub("&ldquo;", "&quot;", content)
+      content <- gsub("&rdquo;", "&quot;", content)
+      content <- gsub("&lsquo;", "'", content)
+      content <- gsub("&rsquo;", "'", content)
+      
+      xmlObj <- xmlTreeParse(content, useInternalNodes = TRUE)
+      status <- 1
+    }else{
+      stop("Invalid SDMX-ML file")
+    }
+  },error = function(err){
+    print(err)
+    status <<- 0
+    return(status)
+  })
   
   #internal function for SDMX Structure-based document
   getSDMXStructureObject <- function(xmlObj, ns, resource){
@@ -350,54 +355,73 @@ readSDMX <- function(file = NULL, isURL = TRUE, isRData = FALSE,
     }
   }
   
-  #attempt to get DSD in case of helper method
-  if(buildRequest && resource %in% c("data","dataflow") && dsd){
-    
-    if(resource == "data" && providerId %in% c("ESTAT", "ISTAT", "WBG_WITS", "UIS2")){
-      if(verbose) message("-> Attempt to fetch DSD ref from dataflow description")
-      flow <- readSDMX(providerId = providerId, providerKey = providerKey, resource = "dataflow",
-                      resourceId = flowRef, verbose = TRUE)
-      dsdRef <- slot(slot(flow, "dataflows")[[1]],"dsdRef")
-      rm(flow)
-    }else{
-      dsdRef <- NULL
-      if(resource == "data"){
-        dsdRef <- slot(obj, "dsdRef")
-      }else if(resource=="dataflow"){
-        dsdRef <- lapply(slot(obj,"dataflows"), slot,"dsdRef")
-      }
-      if(!is.null(dsdRef)){
-        if(verbose) message(paste0("-> DSD ref identified in dataset = '", dsdRef, "'"))
-        if(verbose) message("-> Attempt to fetch & bind DSD to dataset")
-      }else{
-        dsdRef <- flowRef
-        if(verbose) message("-> No DSD ref associated to dataset")
-        if(verbose) message("-> Attempt to fetch & bind DSD to dataset using 'flowRef'")
+  #attempt to get DSD
+  embeddedDSD <- FALSE
+  if(is(obj, "SDMXData")){
+    strTypeObj <- SDMXStructureType(obj@xmlObj, ns, NULL)
+    if(!is.null(strTypeObj@subtype)){
+      if(strTypeObj@subtype %in% c("CodelistsType", "DataStructureDefinitionsType")){
+        dsd <- TRUE
+        embeddedDSD <- TRUE
       }
     }
-    
-    #fetch DSD
+  }
+  
+  if(dsd){
     dsdObj <- NULL
-    if(resource == "data"){
-      dsdObj <- readSDMX(providerId = providerId, providerKey = providerKey,
-                         resource = "datastructure", resourceId = dsdRef, verbose = verbose)
-      if(is.null(dsdObj)){
-        if(verbose) message(sprintf("-> Impossible to fetch DSD for dataset %s", flowRef))
+    
+    #in case codelist or DSD are embedded with data
+    if(embeddedDSD){
+      dsdObj <- SDMXDataStructureDefinition(obj@xmlObj, ns)
+      slot(obj, "dsd") <- dsdObj
+    }
+    
+    #using helpers strategy (with a resource parameter)
+    if(buildRequest && resource %in% c("data","dataflow")){
+      if(resource == "data" && providerId %in% c("ESTAT", "ISTAT", "WBG_WITS", "UIS2")){
+        if(verbose) message("-> Attempt to fetch DSD ref from dataflow description")
+        flow <- readSDMX(providerId = providerId, providerKey = providerKey, resource = "dataflow",
+                         resourceId = flowRef, verbose = TRUE)
+        dsdRef <- slot(slot(flow, "dataflows")[[1]],"dsdRef")
+        rm(flow)
       }else{
-        if(verbose) message("-> DSD fetched and associated to dataset!")
-        slot(obj, "dsd") <- dsdObj
-      }
-    }else if(resource == "dataflow"){
-      dsdObj <- lapply(1:length(dsdRef), function(x){
-        flowDsd <- readSDMX(providerId = providerId, providerKey = providerKey,
-                            resource = "datastructure", resourceId = dsdRef[[x]], verbose = verbose)
-        if(is.null(flowDsd)){
-          if(verbose) message(sprintf("-> Impossible to fetch DSD for dataflow %s",resourceId))
-        }else{
-          if(verbose) message("-> DSD fetched and associated to dataflow!")
-          slot(slot(obj,"dataflows")[[x]],"dsd") <<- flowDsd
+        dsdRef <- NULL
+        if(resource == "data"){
+          dsdRef <- slot(obj, "dsdRef")
+        }else if(resource=="dataflow"){
+          dsdRef <- lapply(slot(obj,"dataflows"), slot,"dsdRef")
         }
-      })
+        if(!is.null(dsdRef)){
+          if(verbose) message(paste0("-> DSD ref identified in dataset = '", dsdRef, "'"))
+          if(verbose) message("-> Attempt to fetch & bind DSD to dataset")
+        }else{
+          dsdRef <- flowRef
+          if(verbose) message("-> No DSD ref associated to dataset")
+          if(verbose) message("-> Attempt to fetch & bind DSD to dataset using 'flowRef'")
+        }
+      }
+      
+      if(resource == "data"){
+        dsdObj <- readSDMX(providerId = providerId, providerKey = providerKey,
+                           resource = "datastructure", resourceId = dsdRef, verbose = verbose)
+        if(is.null(dsdObj)){
+          if(verbose) message(sprintf("-> Impossible to fetch DSD for dataset %s", flowRef))
+        }else{
+          if(verbose) message("-> DSD fetched and associated to dataset!")
+          slot(obj, "dsd") <- dsdObj
+        }
+      }else if(resource == "dataflow"){
+        dsdObj <- lapply(1:length(dsdRef), function(x){
+          flowDsd <- readSDMX(providerId = providerId, providerKey = providerKey,
+                              resource = "datastructure", resourceId = dsdRef[[x]], verbose = verbose)
+          if(is.null(flowDsd)){
+            if(verbose) message(sprintf("-> Impossible to fetch DSD for dataflow %s",resourceId))
+          }else{
+            if(verbose) message("-> DSD fetched and associated to dataflow!")
+            slot(slot(obj,"dataflows")[[x]],"dsd") <<- flowDsd
+          }
+        })
+      }
     }
   }
   

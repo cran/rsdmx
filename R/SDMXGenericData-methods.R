@@ -104,7 +104,7 @@ as.data.frame.SDMXGenericData <- function(x, row.names=NULL, optional=FALSE,
                                 namespaces = ns)
     if(length(obsValuesXML) > 0){
       obsValueXML <- obsValuesXML[[1]]
-      obsValue <- as.numeric(xmlGetAttr(obsValueXML, "value")) 
+      obsValue <- as.numeric(sub(",",".", xmlGetAttr(obsValueXML, "value"), fixed = TRUE))
     }
     obsValue <- as.data.frame(obsValue)
     
@@ -178,10 +178,11 @@ as.data.frame.SDMXGenericData <- function(x, row.names=NULL, optional=FALSE,
     keydf <- as.data.frame(lapply(keydf, as.character), stringsAsFactors=FALSE)
     if(!is.null(obsdf)){
       keydf <- keydf[rep(base::row.names(keydf), nrow(obsdf)),]
-      if(class(keydf) == "data.frame"){
-        base::row.names(keydf) <- 1:nrow(obsdf)
-        colnames(keydf) <- keyNames
+      if(class(keydf) != "data.frame"){
+        keydf <- data.frame(keydf) 
       }
+      base::row.names(keydf) <- 1:nrow(obsdf)
+      colnames(keydf) <- keyNames
     }
     
     #serie attributes

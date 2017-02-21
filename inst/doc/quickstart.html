@@ -286,65 +286,6 @@ stats &lt;- as.data.frame(dataset)
 as.data.frame(providers)
 </code></pre>
 
-<pre><code>##    agencyId
-## 1       ECB
-## 2     ESTAT
-## 3       IMF
-## 4      OECD
-## 5      UNSD
-## 6       FAO
-## 7       ILO
-## 8       UIS
-## 9      UIS2
-## 10 WBG_WITS
-## 11      ABS
-## 12      NBB
-## 13    INSEE
-## 14    INEGI
-## 15    ISTAT
-## 16    NOMIS
-## 17   KNOEMA
-## 18 WIDUKIND
-##                                                                 name
-## 1                                              European Central Bank
-## 2                Eurostat (Statistical office of the European Union)
-## 3                                        International Monetary Fund
-## 4             Organisation for Economic Cooperation and Development 
-## 5                                 United Nations Statistics Division
-## 6            Food and Agriculture Organization of the United Nations
-## 7            International Labour Organization of the United Nations
-## 8  UNESCO Institute of Statistics (old - http://data.uis.unesco.org)
-## 9   UNESCO Institute of Statistics (new - http://api.uis.unesco.org)
-## 10                                   World Integrated Trade Solution
-## 11                                   Australian Bureau of Statistics
-## 12                                          National Bank of Belgium
-## 13     Institut national de la statistique et des études économiques
-## 14            Instituto Nacional de Estadística y Geografía (Méjico)
-## 15                         Istituto nazionale di statistica (Italia)
-## 16                      NOMIS - UK Official Labour Market Statistics
-## 17                                        KNOEMA knowledge plateform
-## 18               Widukind project - International Economics Database
-##            scale country                   builder compliant
-## 1  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
-## 2  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
-## 3  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
-## 4  international    &lt;NA&gt; SDMXDotStatRequestBuilder     FALSE
-## 5  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
-## 6  international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
-## 7  international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
-## 8  international    &lt;NA&gt; SDMXDotStatRequestBuilder     FALSE
-## 9  international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
-## 10 international    &lt;NA&gt;  SDMXREST21RequestBuilder      TRUE
-## 11      national     AUS SDMXDotStatRequestBuilder     FALSE
-## 12      national     BEL SDMXDotStatRequestBuilder     FALSE
-## 13      national     FRA  SDMXREST21RequestBuilder      TRUE
-## 14      national     MEX  SDMXREST21RequestBuilder     FALSE
-## 15      national     ITA  SDMXREST21RequestBuilder      TRUE
-## 16      national      UK        SDMXRequestBuilder     FALSE
-## 17 international    &lt;NA&gt;        SDMXRequestBuilder     FALSE
-## 18 international    &lt;NA&gt;  SDMXREST21RequestBuilder     FALSE
-</code></pre>
-
 <p>Note it is also possible to add an SDMX service provider at runtime. For registering a new SDMX service provider by default, please contact me!</p>
 
 <p>Let&#39;s see how it would look like for querying an <code>OECD</code> datasource:</p>
@@ -353,15 +294,6 @@ as.data.frame(providers)
                 key = list(&quot;TOT&quot;, NULL, NULL), start = 2010, end = 2011)
 df &lt;- as.data.frame(sdmx)
 head(df)
-</code></pre>
-
-<pre><code>##   CO2 VAR GEN COU TIME_FORMAT obsTime obsValue OBS_STATUS
-## 1 TOT B11 WMN AUS         P1Y    2010   107740       &lt;NA&gt;
-## 2 TOT B11 WMN AUS         P1Y    2011   108865       &lt;NA&gt;
-## 3 TOT B11 TOT AUS         P1Y    2010   206714       &lt;NA&gt;
-## 4 TOT B11 TOT AUS         P1Y    2011   210704       &lt;NA&gt;
-## 5 TOT B12 TOT AUS         P1Y    2010    29320       &lt;NA&gt;
-## 6 TOT B12 TOT AUS         P1Y    2011    31232       &lt;NA&gt;
 </code></pre>
 
 <p>It is also possible to query a dataset together with its &ldquo;definition&rdquo;, handled
@@ -378,43 +310,6 @@ as follows:</p>
                 dsd = TRUE)
 df &lt;- as.data.frame(sdmx, labels = TRUE)
 head(df)
-</code></pre>
-
-<pre><code>##   CO2 CO2_label.fr CO2_label.en VAR
-## 1 TOT        Total        Total B11
-## 2 TOT        Total        Total B11
-## 3 TOT        Total        Total B11
-## 4 TOT        Total        Total B11
-## 5 TOT        Total        Total B12
-## 6 TOT        Total        Total B12
-##                                      VAR_label.fr
-## 1 Entrées de personnes étrangères par nationalité
-## 2 Entrées de personnes étrangères par nationalité
-## 3 Entrées de personnes étrangères par nationalité
-## 4 Entrées de personnes étrangères par nationalité
-## 5 Sorties de personnes étrangères par nationalité
-## 6 Sorties de personnes étrangères par nationalité
-##                                    VAR_label.en GEN GEN_label.fr
-## 1  Inflows of foreign population by nationality WMN       Femmes
-## 2  Inflows of foreign population by nationality WMN       Femmes
-## 3  Inflows of foreign population by nationality TOT        Total
-## 4  Inflows of foreign population by nationality TOT        Total
-## 5 Outflows of foreign population by nationality TOT        Total
-## 6 Outflows of foreign population by nationality TOT        Total
-##   GEN_label.en COU COU_label.fr COU_label.en TIME_FORMAT
-## 1        Women AUS    Australie    Australia         P1Y
-## 2        Women AUS    Australie    Australia         P1Y
-## 3        Total AUS    Australie    Australia         P1Y
-## 4        Total AUS    Australie    Australia         P1Y
-## 5        Total AUS    Australie    Australia         P1Y
-## 6        Total AUS    Australie    Australia         P1Y
-##   TIME_FORMAT_label.en obsTime obsValue OBS_STATUS OBS_STATUS_label.en
-## 1               Annual    2010   107740       &lt;NA&gt;                &lt;NA&gt;
-## 2               Annual    2011   108865       &lt;NA&gt;                &lt;NA&gt;
-## 3               Annual    2010   206714       &lt;NA&gt;                &lt;NA&gt;
-## 4               Annual    2011   210704       &lt;NA&gt;                &lt;NA&gt;
-## 5               Annual    2010    29320       &lt;NA&gt;                &lt;NA&gt;
-## 6               Annual    2011    31232       &lt;NA&gt;                &lt;NA&gt;
 </code></pre>
 
 <p>For embedded service providers that require a user authentication/subscription key or token,
@@ -501,7 +396,13 @@ objects (e.g. DSD objects) for use in statistical analyses and R-based web-appli
 
 <p>To save a SDMX R object to RData file:</p>
 
+<pre><code class="r">saveSDMX(sdmx, &quot;tmp.RData&quot;)
+</code></pre>
+
 <p>To reload a SDMX R object from RData file:</p>
+
+<pre><code class="r">sdmx &lt;- readSDMX(&quot;tmp.RData&quot;, isRData = TRUE)
+</code></pre>
 
 </body>
 
