@@ -8,6 +8,8 @@ require(testthat)
 context("SDMXDataStructureDefinition")
 
 test_that("DataStructureDefinition (DSD) - 2.0",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
   file <- system.file("extdata", "SDMXDataStructureDefinition_Example_2.0.xml",
                       package = "rsdmx")
   xmlObj <- xmlParse(file)
@@ -20,6 +22,8 @@ test_that("DataStructureDefinition (DSD) - 2.0",{
 })
 
 test_that("DataStructureDefinition (DSD) - 2.1",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
   file <- system.file("extdata", "SDMXDataStructureDefinition_Example_2.1.xml",
                       package = "rsdmx")
   xmlObj <- xmlParse(file)  

@@ -144,8 +144,10 @@ as.data.frame.SDMXComponents <- function(x, ...){
         }
       )
     ),stringsAsFactors = FALSE)
-  dimensions.df <- cbind(component = "Dimension", dimensions.df,
-                         stringsAsFactors = FALSE)
+  if(nrow(dimensions.df)>0){
+    dimensions.df <- cbind(component = "Dimension", dimensions.df,
+                          stringsAsFactors = FALSE)
+  }
   
   #time dimension
   timeDimension <- slot(x, "TimeDimension")
@@ -179,8 +181,10 @@ as.data.frame.SDMXComponents <- function(x, ...){
               }
             )
     ),stringsAsFactors = FALSE)
-  attributes.df <- cbind(component = "Attribute", attributes.df,
+  if(nrow(attributes.df)>0){
+    attributes.df <- cbind(component = "Attribute", attributes.df,
                          stringsAsFactors = FALSE)
+  }
   
   #output
   df<- do.call("rbind.fill", list(dimensions.df, timeDimension.df,
@@ -189,4 +193,4 @@ as.data.frame.SDMXComponents <- function(x, ...){
 }
 
 setAs("SDMXComponents", "data.frame",
-      function(from) as.data.frame.SDMXComponents(from));
+      function(from) as.data.frame.SDMXComponents(from))

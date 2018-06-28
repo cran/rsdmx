@@ -1,14 +1,14 @@
 Package: rsdmx
-Version: 0.5-11
-Date: 2018-02-14
+Version: 0.5-12
+Date: 2018-06-28
 Title: Tools for Reading SDMX Data and Metadata
 Authors@R: c(
-  person("Emmanuel", "Blondel", role = c("aut", "cre"), email = "emmanuel.blondel1@gmail.com"),
+  person("Emmanuel", "Blondel", role = c("aut", "cre"), email = "emmanuel.blondel1@gmail.com", comment = c(ORCID = "0000-0002-5870-5762")),
   person("Matthieu", "Stigler", role = c("ctb")),
   person("Eric", "Persson", role = c("ctb")))
 Maintainer: Emmanuel Blondel <emmanuel.blondel1@gmail.com>
 Depends: R (>= 2.15)
-Imports: methods, XML (>= 3.98.1.3), RCurl, plyr, utils
+Imports: methods, XML (>= 3.98-1.3), RCurl, plyr, utils
 Suggests: testthat, knitr, roxygen2
 Description: Set of classes and methods to read data and metadata documents
   exchanged through the Statistical Data and Metadata Exchange (SDMX) framework,
@@ -66,9 +66,9 @@ Collate: Class-SDMXSchema.R Class-SDMXType.R Class-SDMXStructureType.R
         readSDMX.R saveSDMX.R profile.R rsdmx.R
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2018-02-14 11:28:34 UTC; manub
-Author: Emmanuel Blondel [aut, cre],
+Packaged: 2018-06-28 19:47:26 UTC; manub
+Author: Emmanuel Blondel [aut, cre] (<https://orcid.org/0000-0002-5870-5762>),
   Matthieu Stigler [ctb],
   Eric Persson [ctb]
 Repository: CRAN
-Date/Publication: 2018-02-14 16:37:26 UTC
+Date/Publication: 2018-06-28 21:32:55 UTC

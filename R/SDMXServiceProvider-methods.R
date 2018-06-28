@@ -134,14 +134,23 @@ setSDMXServiceProviders <- function(){ # nocov start
       unsupportedResources = list("dataflow"))
   )
   
-  #UN-ILO
-  ILO <- SDMXServiceProvider(
-    agencyId = "ILO", name = "International Labour Organization of the United Nations",
+  #UN-ILO (Legacy)
+  ILO_Legacy <- SDMXServiceProvider(
+    agencyId = "ILO_Legacy", name = "International Labour Organization of the United Nations",
     builder = SDMXREST21RequestBuilder(
       regUrl = "http://www.ilo.org/ilostat/sdmx/ws/rest",
       repoUrl = "http://www.ilo.org/ilostat/sdmx/ws/rest",
       compliant = FALSE, skipProviderId = TRUE,
       unsupportedResources = list("dataflow"))                  
+  )
+  
+  #UN-ILO
+  ILO <- SDMXServiceProvider(
+    agencyId = "ILO", name = "International Labour Organization of the United Nations",
+    builder = SDMXREST21RequestBuilder(
+      regUrl = "https://www.ilo.org/sdmx/rest",
+      repoUrl = "https://www.ilo.org/sdmx/rest",
+      compliant = TRUE, skipProviderId = TRUE)                  
   )
   
   #UIS (UNESCO)
@@ -283,6 +292,58 @@ setSDMXServiceProviders <- function(){ # nocov start
     )
   )
   
+  #NCSI - Sultanate of Oman - National Center for Statistics & Information
+  #Based on KNOEMA SDMX server implementation
+  NCSI <- SDMXServiceProvider(
+    agencyId = "NCSI", "Sultanate of Oman - National Center for Statistics & Information",
+    scale = "national", country = "OMN",
+    builder = SDMXRequestBuilder(
+      regUrl = "https://data.gov.om/api/1.0/sdmx",
+      repoUrl = "https://data.gov.om/api/1.0/sdmx",
+      formatter = list(
+        dataflow = function(obj){return(obj)},
+        datastructure = function(obj){return(obj)},
+        data = function(obj){return(obj)}
+      ),
+      handler = list(
+        
+        #'dataflow' resource (path="/")
+        #-----------------------------------------------------------------------
+        dataflow = function(obj){
+          return(obj@regUrl)
+        },
+        #'datastructure' resource (path="/{resourceID})
+        #-----------------------------------------------------------------------
+        datastructure = function(obj){
+          req <- paste(obj@regUrl, obj@resourceId, sep = "/")
+          return(req)
+        },
+        #'data' resource (path="getdata?dataflow={flowRef}&key={key})
+        #----------------------------------------------------------
+        data = function(obj){
+          if(is.null(obj@flowRef)) stop("Missing flowRef value")
+          if(is.null(obj@key)) obj@key = "."
+          
+          #base data request
+          req <- sprintf("%s/data/%s/%s?", obj@repoUrl, obj@flowRef, obj@key)
+          
+          #DataQuery
+          #-> temporal extent (if any)
+          if(!is.null(obj@start)) {
+            req <- paste0(req, "startPeriod=",obj@start)
+          }
+          if(!is.null(obj@end)) {
+            if(!grepl("\\?$", req)) req <- paste0(req,"&")
+            req <- paste0(req, "endPeriod=",obj@end)
+          }
+          
+          return(req)
+        }
+      ),
+      compliant = FALSE
+    )
+  )
+  
   #STAT_EE - Statistics Estonia database {Estonia}
   STAT_EE <- SDMXServiceProvider(
     agencyId = "STAT_EE", name = "Statistics Estonia database",
@@ -290,6 +351,16 @@ setSDMXServiceProviders <- function(){ # nocov start
     builder = SDMXDotStatRequestBuilder(
       regUrl = "http://andmebaas.stat.ee/restsdmx/sdmx.ashx",
       repoUrl = "http://andmebaas.stat.ee/restsdmx/sdmx.ashx",
+      unsupportedResources = list("dataflow")
+    )
+  )
+  
+  UKDS <- SDMXServiceProvider(
+    agencyId = "UKDS", name = "United Kingdom Data Service",
+    scale = "national", country = "UK",
+    builder = SDMXDotStatRequestBuilder(
+      regUrl = "http://stats.ukdataservice.ac.uk/restsdmx/sdmx.ashx",
+      repoUrl = "http://stats.ukdataservice.ac.uk/restsdmx/sdmx.ashx",
       unsupportedResources = list("dataflow")
     )
   )
@@ -397,9 +468,9 @@ setSDMXServiceProviders <- function(){ # nocov start
   
   listOfProviders <- list(
     #international
-    ECB, ESTAT, IMF, OECD, UNSD, FAO, ILO, UIS, UIS2, WBG_WITS,
+    ECB, ESTAT, IMF, OECD, UNSD, FAO, ILO_Legacy, ILO, UIS, UIS2, WBG_WITS,
     #national
-    ABS, NBB, INSEE, INEGI, ISTAT, NOMIS, LSD, STAT_EE,
+    ABS, NBB, INSEE, INEGI, ISTAT, NOMIS, LSD, NCSI, STAT_EE, UKDS,
     #others
     KNOEMA, WIDUKIND
   )
