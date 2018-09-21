@@ -8,8 +8,6 @@ require(testthat)
 context("SDMXStructureSpecificData")
 
 test_that("StructureSpecificData 2.1",{
-  testthat::skip_on_travis()
-  testthat::skip_on_cran()
   file <- system.file("extdata", "SDMXStructureSpecificDataExample_2.1.xml", package = "rsdmx")
   xmlObj <- xmlParse(file)
   ns <- namespaces.SDMX(xmlObj)

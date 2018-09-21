@@ -8,8 +8,6 @@ require(testthat)
 context("SDMXCrossSectionalData")
 
 test_that("CrossSectionalData 1.0",{
-  testthat::skip_on_travis()
-  testthat::skip_on_cran()
   file <- system.file("extdata", "SDMXCrossSectionalDataExample_1.0.xml", package = "rsdmx")
   xmlObj <- xmlParse(file)
   ns <- namespaces.SDMX(xmlObj)

@@ -8,8 +8,6 @@ require(testthat)
 context("SDMXCompactData")
 
 test_that("CompactData 2.0",{
-  testthat::skip_on_travis()
-  testthat::skip_on_cran()
   file <- system.file("extdata", "SDMXCompactDataExample_2.0.xml", package = "rsdmx")
   xmlObj <- xmlParse(file)
   ns <- namespaces.SDMX(xmlObj)

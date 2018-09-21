@@ -8,8 +8,6 @@ require(testthat)
 context("SDMXGenericData")
 
 test_that("GenericData 2.0",{
-  testthat::skip_on_travis()
-  testthat::skip_on_cran()
   file <- system.file("extdata", "SDMXGenericDataExample_2.0.xml", package = "rsdmx")
   xmlObj <- xmlParse(file)
   ns <- namespaces.SDMX(xmlObj)
@@ -27,8 +25,6 @@ test_that("GenericData 2.0",{
 })
 
 test_that("GenericData - 2.0 - Eurostat",{
-  testthat::skip_on_travis()
-  testthat::skip_on_cran()
   file <- system.file("extdata", "Example_Eurostat_2.0.xml", package = "rsdmx")
   xmlObj <- xmlParse(file)
   ns <- namespaces.SDMX(xmlObj)
@@ -49,8 +45,6 @@ test_that("GenericData - 2.0 - Eurostat",{
 })
 
 test_that("GenericData - 2.1",{
-  testthat::skip_on_travis()
-  testthat::skip_on_cran()
   file <- system.file("extdata", "SDMXGenericDataExample_2.1.xml", package = "rsdmx")
   xmlObj <- xmlParse(file)
   ns <- namespaces.SDMX(xmlObj)
