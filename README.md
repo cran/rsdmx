@@ -3,7 +3,8 @@
 [![Build Status](https://travis-ci.org/opensdmx/rsdmx.svg?branch=master)](https://travis-ci.org/opensdmx/rsdmx)
 [![codecov.io](http://codecov.io/github/opensdmx/rsdmx/coverage.svg?branch=master)](http://codecov.io/github/opensdmx/rsdmx?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/rsdmx)](https://cran.r-project.org/package=rsdmx)
-[![Github_Status_Badge](https://img.shields.io/badge/Github-0.5--13-blue.svg)](https://github.com/opensdmx/rsdmx)
+[![cran checks](https://cranchecks.info/badges/worst/rsdmx)](https://cran.r-project.org/web/checks/check_results_rsdmx.html)
+[![Github_Status_Badge](https://img.shields.io/badge/Github-0.5--14-blue.svg)](https://github.com/opensdmx/rsdmx)
 [![DOI](https://zenodo.org/badge/5183/opensdmx/rsdmx.svg)](http://doi.org/10.5281/zenodo.592404)
 
 ``rsdmx``: Tools for reading SDMX data and metadata documents in R
@@ -64,10 +65,7 @@ Please note that following a new submission to CRAN, or eventually a modificatio
 
 ### Mailing list
 
-A user google group is available at: [https://groups.google.com/forum/#!forum/rsdmx](https://groups.google.com/forum/#!forum/rsdmx)<br/>
-You can subscribe directly in the google group, or by email: [rsdmx+subscribe@googlegroups.com](rsdmx+subscribe@googlegroups.com)
-To send a post, use: [rsdmx@googlegroups.com](rsdmx@googlegroups.com)
-To unsubscribe, send an email to: [rsdmx+unsubscribe@googlegroups.com](rsdmx+unsubscribe@googlegroups.com)
+A user google group is available at: [https://groups.google.com/forum/#!forum/rsdmx](https://groups.google.com/forum/#!forum/rsdmx)
 
 ## Quickstart
 
