@@ -114,7 +114,17 @@ setSDMXServiceProviders <- function(){ # nocov start
       repoUrl = "http://stats.oecd.org/restsdmx/sdmx.ashx")
   )
   
-  #UN
+  #UNICEF
+  UNICEF <- SDMXServiceProvider(
+    agencyId = "UNICEF", "United Nations International Children's Emergency Fund",
+    builder = SDMXREST21RequestBuilder(
+      regUrl = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
+      repoUrl = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
+      compliant = TRUE
+    )
+  )
+  
+  #UNSD
   UNSD <- SDMXServiceProvider(
     agencyId = "UNSD", "United Nations Statistics Division",
     builder = SDMXREST21RequestBuilder(
@@ -189,6 +199,15 @@ setSDMXServiceProviders <- function(){ # nocov start
       repoUrl = "http://api.worldbank.org/v2/sdmx/rest",
       compliant = TRUE, skipProviderId = TRUE
     )
+  )
+
+  #PDH.STAT (Pacific Data Hub by The Pacific Community)
+  PDH <- SDMXServiceProvider(
+    agencyId = "PDH", name = "Pacific Data Hub DotStat",
+    builder = SDMXREST21RequestBuilder(
+      regUrl = "https://stats-nsi-stable.pacificdata.org/rest",
+      repoUrl = "https://stats-nsi-stable.pacificdata.org/rest",
+      compliant = FALSE) 
   )
   
   #national data providers
@@ -478,7 +497,7 @@ setSDMXServiceProviders <- function(){ # nocov start
   
   listOfProviders <- list(
     #international
-    ECB, ESTAT, IMF, OECD, UNSD, FAO, ILO_Legacy, ILO, UIS, UIS2, WBG_WITS, WB,
+    ECB, ESTAT, IMF, OECD, UNICEF, UNSD, FAO, ILO_Legacy, ILO, UIS, UIS2, WBG_WITS, WB, PDH,
     #national
     ABS, NBB, INSEE, INEGI, ISTAT, NOMIS, LSD, NCSI, STAT_EE, UKDS,
     #others

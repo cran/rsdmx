@@ -177,6 +177,41 @@ test_that("OECD - data",{
   }
 })
 
+#UNICEF
+#----
+
+#-> dataflow
+test_that("UNICEF - dataflow",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "UNICEF", resource = "dataflow")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataFlows")
+  }
+})
+
+#-> datastructure
+test_that("UNICEF - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "UNICEF", resource = "datastructure", resourceId = "COVID")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("UNICEF - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "UNICEF", resource = "data",
+                   flowRef = "COVID", key = NULL)
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXStructureSpecificData")
+  }
+})
+
+
 #UNSD (UN-DATA)
 #----
 
@@ -443,6 +478,41 @@ test_that("WB - data",{
   sdmx <- readSDMX(providerId = "WB", resource = "data",
                    key = "A.SP_POP_TOTL.AFG", key.mode = "SDMX",
                    flowRef = "WDI", start = "2011", end = "2011")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXGenericData")
+  }
+})
+
+#PDH (Pacific Data Hub)
+#--------
+
+#-> dataflow
+test_that("PDH - dataflow",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "PDH", resource = "dataflow")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataFlows")
+  }
+})
+
+#-> datastructure
+test_that("PDH - datastructure",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "PDH", resource = "datastructure", resourceId = "DSD_CPI")
+  if(!is.null(sdmx)){
+    expect_is(sdmx, "SDMXDataStructureDefinition")
+  }
+})
+
+#-> data
+test_that("PDH - data",{
+  testthat::skip_on_travis()
+  testthat::skip_on_cran()
+  sdmx <- readSDMX(providerId = "PDH", resource = "data",
+                   key = "A.FJ.INF.", key.mode = "SDMX",
+                   flowRef = "DF_CPI", start = "2015", end = "2019")
   if(!is.null(sdmx)){
     expect_is(sdmx, "SDMXGenericData")
   }

@@ -1,27 +1,28 @@
 Package: rsdmx
-Version: 0.5-14
-Date: 2020-04-06
+Version: 0.6
+Date: 2021-02-05
 Title: Tools for Reading SDMX Data and Metadata
 Authors@R: c(
   person("Emmanuel", "Blondel", role = c("aut", "cre"), email = "emmanuel.blondel1@gmail.com", comment = c(ORCID = "0000-0002-5870-5762")),
-  person("Matthieu", "Stigler", role = c("ctb")),
+  person("Matthieu", "Stigler", role = c("ctb"), comment =c(ORCID="0000-0002-6802-4290")),
   person("Eric", "Persson", role = c("ctb")))
 Maintainer: Emmanuel Blondel <emmanuel.blondel1@gmail.com>
 Depends: R (>= 2.15)
-Imports: methods, XML (>= 3.98-1.3), RCurl, plyr, utils
-Suggests: testthat, knitr, roxygen2
+Imports: R6, methods, XML (>= 3.98-1.3), httr, plyr, utils
+Suggests: testthat, knitr, roxygen2, markdown
 Description: Set of classes and methods to read data and metadata documents
   exchanged through the Statistical Data and Metadata Exchange (SDMX) framework,
   currently focusing on the SDMX XML standard format (SDMX-ML).
 License: GPL (>= 2)
 VignetteBuilder: knitr
-URL: https://github.com/opensdmx/rsdmx, http://www.sdmx.org
+URL: https://github.com/opensdmx/rsdmx, https://sdmx.org
 BugReports: https://github.com/opensdmx/rsdmx/issues
 LazyLoad: yes
 Encoding: UTF-8
-Collate: Class-SDMXSchema.R Class-SDMXType.R Class-SDMXStructureType.R
-        Class-SDMXHeader.R Class-SDMXFooterMessage.R Class-SDMXFooter.R
-        Class-SDMX.R Class-SDMXConcept.R Class-SDMXConceptScheme.R
+Collate: rsdmx_logger.R Class-SDMXSchema.R Class-SDMXType.R
+        Class-SDMXStructureType.R Class-SDMXHeader.R
+        Class-SDMXFooterMessage.R Class-SDMXFooter.R Class-SDMX.R
+        Class-SDMXConcept.R Class-SDMXConceptScheme.R
         Class-SDMXConcepts.R Class-SDMXCode.R Class-SDMXCodelist.R
         Class-SDMXCodelists.R Class-SDMXDimension.R
         Class-SDMXTimeDimension.R Class-SDMXPrimaryMeasure.R
@@ -64,11 +65,11 @@ Collate: Class-SDMXSchema.R Class-SDMXType.R Class-SDMXStructureType.R
         SDMXDotStatRequestBuilder-methods.R
         SDMXServiceProvider-methods.R SDMXServiceProviders-methods.R
         readSDMX.R saveSDMX.R profile.R rsdmx.R
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2020-04-07 11:21:45 UTC; manub
+Packaged: 2021-02-05 22:14:56 UTC; manub
 Author: Emmanuel Blondel [aut, cre] (<https://orcid.org/0000-0002-5870-5762>),
-  Matthieu Stigler [ctb],
+  Matthieu Stigler [ctb] (<https://orcid.org/0000-0002-6802-4290>),
   Eric Persson [ctb]
 Repository: CRAN
-Date/Publication: 2020-04-07 15:00:10 UTC
+Date/Publication: 2021-02-06 23:40:03 UTC

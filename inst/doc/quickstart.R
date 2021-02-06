@@ -5,7 +5,7 @@
 #  library(rsdmx)
 
 ## ----eval = FALSE,results="hide"-----------------------------------------
-#  myUrl <- "http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MIG/TOT../OECD?startTime=2000&endTime=2011"
+#  myUrl <- "https://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MIG/TOT../OECD?startTime=2000&endTime=2011"
 #  dataset <- readSDMX(myUrl)
 #  stats <- as.data.frame(dataset)
 
@@ -40,7 +40,7 @@
 ## ---- eval = FALSE-------------------------------------------------------
 #  #bulk download from Eurostat
 #  tf <- tempfile(tmpdir = tdir <- tempdir()) #temp file and folder
-#  download.file("http://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?sort=1&file=data%2Frd_e_gerdsc.sdmx.zip", tf)
+#  download.file("https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?sort=1&file=data%2Frd_e_gerdsc.sdmx.zip", tf)
 #  sdmx_files <- unzip(tf, exdir = tdir)
 #  
 #  #read local SDMX (set isURL = FALSE)
@@ -54,7 +54,7 @@
 #  cldf <- as.data.frame(clobj)
 
 ## ----eval = FALSE,results="hide"-----------------------------------------
-#  dsdUrl <- "http://stats.oecd.org/restsdmx/sdmx.ashx/GetDataStructure/TABLE1"
+#  dsdUrl <- "https://stats.oecd.org/restsdmx/sdmx.ashx/GetDataStructure/TABLE1"
 #  dsd <- readSDMX(dsdUrl)
 
 ## ----eval = FALSE,results="hide"-----------------------------------------
