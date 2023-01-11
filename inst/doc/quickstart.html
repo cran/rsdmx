@@ -230,7 +230,7 @@ hr {
 <li><strong>metadata</strong> SDMX-ML <em>documents</em>. The main metadata <em>document</em> is known a <code>Data Structure Definition</code> (DSD). As its name indicates, it <em>describes</em> the structure and organization of a dataset, and will generally include all the master/reference data used to characterize a dataset. The 2 main types of metadata are (1) the <code>concepts</code>, which correspond to the <em>dimensions</em> and/or <em>attributes</em> of the dataset, and (2) the <code>codelists</code> which inventory the possible values to be used in the representation of <em>dimensions</em> and <em>attributes</em>.</li>
 </ul>
 
-<p>For more information about the SDMX standards, you can visit the <a href="https://sdmx.org/">SDMX website</a>, or this <a href="https://ec.europa.eu/eurostat/web/sdmx-infospace/trainings-tutorials/tutorials">introduction by EUROSTAT</a>.</p>
+<p>For more information about the SDMX standards, you can visit the <a href="https://sdmx.org/">SDMX website</a>, or this <a href="https://ec.europa.eu/eurostat/web/sdmx-infospace/trainings-tutorials">introduction by EUROSTAT</a>.</p>
 
 <h2>How to deal with SDMX in R</h2>
 
@@ -247,9 +247,9 @@ hr {
 
 <h2>Install rsdmx</h2>
 
-<p><code>rsdmx</code> can be installed from CRAN or from its development repository hosted in Github. For the latter, you will need the <code>devtools</code> package and run:</p>
+<p><code>rsdmx</code> can be installed from CRAN or from its development repository hosted in Github. For the latter, you will need the <code>remotes</code> package and run:</p>
 
-<pre><code class="r">devtools::install_github(&quot;opensdmx/rsdmx&quot;)
+<pre><code class="r">remotes::install_github(&quot;opensdmx/rsdmx&quot;)
 </code></pre>
 
 <h2>Load rsdmx</h2>
@@ -350,16 +350,7 @@ stats &lt;- as.data.frame(sdmx)
 
 <h2>Read metadata documents</h2>
 
-<p>This section will introduce you on how to read SDMX <strong>metadata</strong> documents, including <code>concepts</code>, <code>codelists</code> and a complete <code>data structure definition</code> (DSD)</p>
-
-<h3>Codelists</h3>
-
-<p>Read codelists from <a href="http://data.fao.org/sdmx/index.html">FAO data portal</a></p>
-
-<pre><code class="r">clUrl &lt;- &quot;http://data.fao.org/sdmx/registry/codelist/FAO/CL_FAO_MAJOR_AREA/0.1&quot;
-clobj &lt;- readSDMX(clUrl)
-cldf &lt;- as.data.frame(clobj)
-</code></pre>
+<p>This section will introduce you on how to read SDMX <strong>metadata</strong> complete <code>data structure definition</code> (DSD)</p>
 
 <h3>Data Structure Definition (DSD)</h3>
 

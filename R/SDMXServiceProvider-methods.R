@@ -66,6 +66,16 @@ setSDMXServiceProviders <- function(){ # nocov start
   #international data providers
   #----------------------------
 
+  #BIS
+  BIS <- SDMXServiceProvider(
+   agencyId = "BIS", name = "Bank for International Settlements",
+   builder = SDMXREST21RequestBuilder(
+     regUrl = "https://stats.bis.org/api/v1",
+     repoUrl = "https://stats.bis.org/api/v1",
+     compliant = TRUE
+   )
+  )
+  
   #ECB
   ECB <- SDMXServiceProvider(
     agencyId = "ECB", name = "European Central Bank",
@@ -110,13 +120,23 @@ setSDMXServiceProviders <- function(){ # nocov start
   OECD <- SDMXServiceProvider(
     agencyId = "OECD", name = "Organisation for Economic Cooperation and Development ",
     builder = SDMXDotStatRequestBuilder(
-      regUrl = "http://stats.oecd.org/restsdmx/sdmx.ashx",
-      repoUrl = "http://stats.oecd.org/restsdmx/sdmx.ashx")
+      regUrl = "https://stats.oecd.org/restsdmx/sdmx.ashx",
+      repoUrl = "https://stats.oecd.org/restsdmx/sdmx.ashx")
   )
   
   #UNICEF
   UNICEF <- SDMXServiceProvider(
     agencyId = "UNICEF", "United Nations International Children's Emergency Fund",
+    builder = SDMXREST21RequestBuilder(
+      regUrl = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
+      repoUrl = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
+      compliant = TRUE
+    )
+  )
+   
+  #COUNTDOWN 2030
+  CD2030 <- SDMXServiceProvider(
+    agencyId = "CD2030", "United Nations International Children's Emergency Fund",
     builder = SDMXREST21RequestBuilder(
       regUrl = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
       repoUrl = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
@@ -133,16 +153,6 @@ setSDMXServiceProviders <- function(){ # nocov start
       compliant = TRUE
     )
   )  
-  
-  #UN-FAO
-  FAO <- SDMXServiceProvider(
-    agencyId = "FAO", name = "Food and Agriculture Organization of the United Nations",
-    builder = SDMXREST21RequestBuilder(
-      regUrl = "http://data.fao.org/sdmx/registry",
-      repoUrl = "http://data.fao.org/sdmx/repository",
-      compliant = FALSE,
-      unsupportedResources = list("dataflow"))
-  )
   
   #UN-ILO (Legacy)
   ILO_Legacy <- SDMXServiceProvider(
@@ -161,24 +171,6 @@ setSDMXServiceProviders <- function(){ # nocov start
       regUrl = "https://www.ilo.org/sdmx/rest",
       repoUrl = "https://www.ilo.org/sdmx/rest",
       compliant = TRUE, skipProviderId = TRUE)                  
-  )
-  
-  #UIS (UNESCO)
-  UIS <- SDMXServiceProvider(
-    agencyId = "UIS", name = "UNESCO Institute of Statistics (old - http://data.uis.unesco.org)",
-    builder = SDMXDotStatRequestBuilder(
-      regUrl = "http://data.uis.unesco.org/RestSDMX/sdmx.ashx",
-      repoUrl = "http://data.uis.unesco.org/RestSDMX/sdmx.ashx")
-  )
-  
-  #UIS2 (UNESCO)
-  UIS2 <- SDMXServiceProvider(
-    agencyId = "UIS2", name = "UNESCO Institute of Statistics (new - http://api.uis.unesco.org)",
-    builder = SDMXREST21RequestBuilder(
-      regUrl = "http://api.uis.unesco.org/sdmx",
-      repoUrl = "http://api.uis.unesco.org/sdmx",
-      accessKey = "subscription-key",
-      compliant = TRUE, skipProviderId = TRUE)
   )
   
   #WBG_WITS (World Integrated Trade Solution)
@@ -217,10 +209,10 @@ setSDMXServiceProviders <- function(){ # nocov start
   ABS <- SDMXServiceProvider(
     agencyId = "ABS", name = "Australian Bureau of Statistics",
     scale = "national", country = "AUS",
-    builder = SDMXDotStatRequestBuilder(
-      regUrl = "http://stat.data.abs.gov.au/restsdmx/sdmx.ashx",
-      repoUrl = "http://stat.data.abs.gov.au/restsdmx/sdmx.ashx", 
-      forceProviderId = TRUE, unsupportedResources = list("dataflow"))
+    builder = SDMXREST21RequestBuilder(
+      regUrl = "https://api.data.abs.gov.au",
+      repoUrl = "https://api.data.abs.gov.au", 
+      compliant = TRUE)
   )
   
   #NBB {Belgium}
@@ -228,8 +220,8 @@ setSDMXServiceProviders <- function(){ # nocov start
     agencyId = "NBB", name = "National Bank of Belgium",
     scale = "national", country = "BEL",
     builder = SDMXDotStatRequestBuilder(
-      regUrl = "http://stat.nbb.be/RestSDMX/sdmx.ashx",
-      repoUrl = "http://stat.nbb.be/RestSDMX/sdmx.ashx", 
+      regUrl = "https://stat.nbb.be/RestSDMX/sdmx.ashx",
+      repoUrl = "https://stat.nbb.be/RestSDMX/sdmx.ashx", 
       unsupportedResources = list("dataflow"))
   )
   
@@ -384,15 +376,79 @@ setSDMXServiceProviders <- function(){ # nocov start
     )
   )
   
-  UKDS <- SDMXServiceProvider(
-    agencyId = "UKDS", name = "United Kingdom Data Service",
-    scale = "national", country = "UK",
-    builder = SDMXDotStatRequestBuilder(
-      regUrl = "http://stats.ukdataservice.ac.uk/restsdmx/sdmx.ashx",
-      repoUrl = "http://stats.ukdataservice.ac.uk/restsdmx/sdmx.ashx",
-      unsupportedResources = list("dataflow")
+  #UKDS removed - no support for SDMX-JSON in rsdmx at now
+  #UKDS <- SDMXServiceProvider(
+  #  agencyId = "UKDS", name = "United Kingdom Data Service",
+  #  scale = "national", country = "UK",
+  #  builder = SDMXDotStatRequestBuilder(
+  #    regUrl = "http://stats.ukdataservice.ac.uk/restsdmx/sdmx.ashx",
+  #    repoUrl = "http://stats.ukdataservice.ac.uk/restsdmx/sdmx.ashx",
+  #    unsupportedResources = list("dataflow")
+  #  )
+  #)
+  
+  #Bundesbank
+  BBK <- SDMXServiceProvider(
+    agencyId = "BBK", name = "Bundesbank",
+    scale = "national", country = "DEU",
+    builder = SDMXRequestBuilder(
+      regUrl = "https://api.statistiken.bundesbank.de/rest/metadata",
+      repoUrl = "https://api.statistiken.bundesbank.de/rest",
+      formatter = list(
+        dataflow = function(obj){return(obj)},
+        datastructure = function(obj){return(obj)},
+        data = function(obj){return(obj)}
+      ),
+      #resource handler
+      handler = list(
+        
+        #dataflow resource (dataflow/agencyID/resourceID/version)
+        #-----------------------------------------------------------------------
+        dataflow = function(obj){
+          req <- sprintf("%s/dataflow/%s",obj@regUrl, obj@providerId)
+          if(!is.null(obj@resourceId)) req <- paste(req, obj@resourceId, sep = "/")
+          return(req)
+        },
+        
+        #datastructure resource (datastructure/agencyID/resourceID/version)
+        #--------------------------------------------------------------------------------
+        datastructure = function(obj){
+          req <- sprintf("%s/datastructure/%s",obj@regUrl, obj@providerId)
+          if(!is.null(obj@resourceId)) req <- paste(req, obj@resourceId, sep = "/")
+          req <- paste0(req, "?references=children") #TODO to see later to have arg for this
+          return(req)
+        },
+        
+        #data resource (data/flowRef/key/providerRef)
+        #----------------------------------------------------------
+        data = function(obj){
+          if(is.null(obj@flowRef)) stop("Missing flowRef value")
+          req <- sprintf("%s/data/%s/%s",obj@repoUrl, obj@flowRef, obj@key)
+          
+          #DataQuery
+          #-> temporal extent (if any)
+          addParams = FALSE
+          if(!is.null(obj@start)){
+            req <- paste0(req, "?")
+            addParams = TRUE
+            req <- paste0(req, "startPeriod=", obj@start)
+          }
+          if(!is.null(obj@end)){
+            if(!addParams){
+              req <- paste0(req, "?")
+            }else{
+              req <- paste0(req, "&")
+            }
+            req <- paste0(req, "endPeriod=", obj@end) 
+          }
+          
+          return(req)
+        }
+      ),
+      compliant = FALSE
     )
   )
+  
   
   #other data providers
   #--------------------
@@ -443,65 +499,13 @@ setSDMXServiceProviders <- function(){ # nocov start
     )
   )
   
-  #WIDUKIND project - International Economics Database
-  WIDUKIND <- SDMXServiceProvider(
-    agencyId = "WIDUKIND", name = "Widukind project - International Economics Database",
-    builder = SDMXREST21RequestBuilder(
-      regUrl = "http://widukind-api.cepremap.org/api/v1/sdmx",
-      repoUrl = "http://widukind-api.cepremap.org/api/v1/sdmx",
-      compliant = FALSE, skipProviderId = TRUE
-    )
-  )
-  WIDUKIND@builder@handler$dataflow = function(obj){
-    req <- sprintf("%s/dataflow",obj@regUrl)
-    if(!is.null(obj@agencyId)) req = paste(req, obj@agencyId,sep="/")
-    if(!is.null(obj@resourceId)) req = paste(req, obj@resourceId,sep="/")
-    return(req)
-  }
-  WIDUKIND@builder@handler$datastructure = function(obj){ 
-    req <- sprintf("%s/datastructure",obj@regUrl)
-    if(!is.null(obj@agencyId)){
-      req <- paste(req,obj@agencyId,sep="/")
-    }else{
-      req <- paste(req, "all",sep="/") #not supported by service
-    }
-    if(!is.null(obj@resourceId)) req <- paste(req, obj@resourceId, sep="/")
-    req <- paste0(req, "?references=children") #TODO to see later to have arg for this
-    return(req)
-  }
-  WIDUKIND@builder@handler$data = function(obj){
-    if(is.null(obj@flowRef)) stop("Missing flowRef value")
-    if(is.null(obj@agencyId)) obj@agencyId = "all"
-    if(is.null(obj@key)) obj@key = "all"
-    req <- sprintf("%s/%s/data/%s/%s",obj@repoUrl, obj@agencyId, obj@flowRef, obj@key)
-    
-    #DataQuery
-    #-> temporal extent (if any)
-    addParams = FALSE
-    if(!is.null(obj@start)){
-      req <- paste0(req, "?")
-      addParams = TRUE
-      req <- paste0(req, "startPeriod=", obj@start)
-    }
-    if(!is.null(obj@end)){
-      if(!addParams){
-        req <- paste0(req, "?")
-      }else{
-        req <- paste0(req, "&")
-      }
-      req <- paste0(req, "endPeriod=", obj@end) 
-    }
-    return(req)
-    
-  }
-  
   listOfProviders <- list(
     #international
-    ECB, ESTAT, IMF, OECD, UNICEF, UNSD, FAO, ILO_Legacy, ILO, UIS, UIS2, WBG_WITS, WB, PDH,
+    BIS, ECB, ESTAT, IMF, OECD, UNICEF, CD2030, UNSD, ILO_Legacy, ILO, WBG_WITS, WB, PDH,
     #national
-    ABS, NBB, INSEE, INEGI, ISTAT, NOMIS, LSD, NCSI, STAT_EE, UKDS,
+    ABS, NBB, INSEE, INEGI, ISTAT, NOMIS, LSD, NCSI, STAT_EE, BBK,
     #others
-    KNOEMA, WIDUKIND
+    KNOEMA
   )
 
   .rsdmx.options$providers <- new("SDMXServiceProviders", providers = listOfProviders)
