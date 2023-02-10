@@ -1,4 +1,4 @@
-7469ee3cde61844618f6d141e0e23800 *DESCRIPTION
+f6f1e7017facb184fe57aae3a0962827 *DESCRIPTION
 449a18c0ea32a2b14d19e5b803df9091 *NAMESPACE
 7c284d5824f33069f11b17c7675be28e *R/Class-SDMX.R
 937d65f7b9242d74bd2ffc4f517b18f9 *R/Class-SDMXAgency.R
@@ -78,11 +78,11 @@ b835999fe6af7f9c3f751d6cf7cc4b81 *R/SDMXPrimaryMeasure-methods.R
 4ce4c37d400d74c3f97d78bd4c660343 *R/SDMXRequestBuilder-methods.R
 d88f14204637060df7b523a8beed29a3 *R/SDMXRequestParams-methods.R
 8cda4199d6f29d6f03532ae7910b38d0 *R/SDMXSchema-methods.R
-aa8faf3900908f394fd96428f7c05c60 *R/SDMXServiceProvider-methods.R
+6ad5a7ee7074e7b37e7c1919b0046564 *R/SDMXServiceProvider-methods.R
 596e888423e7e843f504da216d17c88f *R/SDMXServiceProviders-methods.R
 57a1ba505e2dc3adc817e2b3424a4aeb *R/SDMXStructureSpecificData-methods.R
 bc6b391928c33da247301c4557defc8a *R/SDMXStructureSpecificTimeSeriesData-methods.R
-23c3b799a4cbf0d8bc934c961cc11331 *R/SDMXStructureType-methods.R
+1de14cfa7277b8f18a784f6f29a5724c *R/SDMXStructureType-methods.R
 e0c8fef2379b277757e937380420c959 *R/SDMXTimeDimension-methods.R
 5c28344d7dd9546cb71e0ec1da8552a8 *R/SDMXType-methods.R
 e4d3358e95a777dc47b468463e8e8e07 *R/SDMXUtilityData-methods.R
@@ -91,11 +91,11 @@ e4d3358e95a777dc47b468463e8e8e07 *R/SDMXUtilityData-methods.R
 5b665a0f7047ea7ac25ccf5c574264b2 *R/rsdmx.R
 dc40ddca19e6fbe6d062766432b520ae *R/rsdmx_logger.R
 d24c3cc3268a0e736110265d6c1c7928 *R/saveSDMX.R
-1aa991dde345058268b77d4836bc41c3 *README.md
+40442b0fe4d3755247fbeeeb16acec34 *README.md
 2564b97f8d917fec0b4254e90d5df473 *build/vignette.rds
 071110cceb013fbec28238bf2edf23ab *inst/doc/quickstart.R
-d6b3af25d32b813ae10ea1871fe1ba53 *inst/doc/quickstart.Rmd
-e9134a379c03ae1cfaa0fa928eabf5b1 *inst/doc/quickstart.html
+25511b54f8ddc8d139938e5f322d7a5d *inst/doc/quickstart.Rmd
+8cb34842ad7d0c6267947170b2fe8d14 *inst/doc/quickstart.html
 af681e03cfa4f9b7992e4c88ee87e761 *inst/extdata/Example_Eurostat_2.0.xml
 42686b299d41fc0d0e9aaf5eac0bbafa *inst/extdata/Example_Eurostat_2.1.xml
 7c7100c89554ad05bf36cf65ffc80451 *inst/extdata/SDMXCodelists_Example_2.0.xml
@@ -193,7 +193,7 @@ f1e23ef3ddb8fa5bbdb23a4e562a409e *tests/testthat/test_Data.R
 02daf57210d087f8a7bc9833a1f45438 *tests/testthat/test_GenericData.R
 0f303ab6b500e6457c76c57b24cf51fe *tests/testthat/test_Header.R
 708b7a5064c590e112721a5cc6f0cd2e *tests/testthat/test_Main.R
-01d1d31bc34785a45f0250b62a2b17af *tests/testthat/test_Main_Helpers.R
+d85cfeb869cae960c76a9e2b7689d91b *tests/testthat/test_Main_Helpers.R
 700a92000147a04b89a8424c65da30de *tests/testthat/test_MessageGroup.R
 b825282d262c5fde826bcc97ea5dce4b *tests/testthat/test_Namespaces.R
 03873c012df849c4c1ef597c6a428fbb *tests/testthat/test_OrganisationSchemes.R
@@ -204,4 +204,4 @@ d4200f5bf4b3b9ad723d3b72d5ae5ce4 *tests/testthat/test_Soap.R
 dc89758e7741505fee36d6e340eafe54 *tests/testthat/test_StructureSpecificData.R
 ea49a5185f8373adb9c92421f2ce9cfa *tests/testthat/test_Type.R
 0fcc6fc026200b11c44f759a13286ee8 *tests/testthat/test_saveSDMX.R
-d6b3af25d32b813ae10ea1871fe1ba53 *vignettes/quickstart.Rmd
+25511b54f8ddc8d139938e5f322d7a5d *vignettes/quickstart.Rmd

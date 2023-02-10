@@ -1,6 +1,6 @@
 Package: rsdmx
-Version: 0.6-1
-Date: 2023-01-10
+Version: 0.6-2
+Date: 2023-02-10
 Title: Tools for Reading SDMX Data and Metadata
 Authors@R: c(
   person("Emmanuel", "Blondel", role = c("aut", "cre"), email = "emmanuel.blondel1@gmail.com", comment = c(ORCID = "0000-0002-5870-5762")),
@@ -67,9 +67,9 @@ Collate: rsdmx_logger.R Class-SDMXSchema.R Class-SDMXType.R
         readSDMX.R saveSDMX.R profile.R rsdmx.R
 RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2023-01-10 22:51:20 UTC; manub
+Packaged: 2023-02-10 09:28:30 UTC; manub
 Author: Emmanuel Blondel [aut, cre] (<https://orcid.org/0000-0002-5870-5762>),
   Matthieu Stigler [ctb] (<https://orcid.org/0000-0002-6802-4290>),
   Eric Persson [ctb]
 Repository: CRAN
-Date/Publication: 2023-01-11 10:40:02 UTC
+Date/Publication: 2023-02-10 09:50:02 UTC
