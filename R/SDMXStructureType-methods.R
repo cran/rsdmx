@@ -13,6 +13,8 @@
 #' @return an object of class "SDMXStructureType"
 #' 
 #' @seealso \link{readSDMX}
+#' 
+#' @export
 #'
 SDMXStructureType <- function(xmlObj, namespaces, resource){
 	new("SDMXStructureType",
@@ -76,10 +78,18 @@ type.SDMXStructureType <- function(xmlObj, namespaces, resource){
 }
 
 #generics
-if (!isGeneric("getStructureType"))
-	setGeneric("getStructureType", function(obj) standardGeneric("getStructureType"));
+#' @export
+#' @name getStructureType
+#' @title getStructureType
+#' @docType methods
+#' @rdname SDMXStructureType-methods
+#' @usage
+#' getStructureType(obj)
+#' @param obj object of class "SDMX"
+setGeneric("getStructureType", function(obj) standardGeneric("getStructureType"));
 
 #methods
+#' @rdname SDMXStructureType-methods
 setMethod(f = "getStructureType", signature = "SDMXStructureType", function(obj){
             return(obj@subtype)
           })

@@ -3,8 +3,7 @@
 #' @docType class
 #' @export
 #' @keywords logger
-#' @return Object of \code{\link{R6Class}} for modelling a simple logger
-#' @format \code{\link{R6Class}} object.
+#' @return Object for modelling a simple logger
 #'
 #' @section Abstract Methods:
 #' \describe{
@@ -20,7 +19,8 @@
 #' }
 #' 
 #' @note Logger class used internally by rsdmx
-#'
+#' @export
+#' 
 rsdmxLogger <- R6Class("rsdmxLogger",
    private = list(
      enabled = FALSE,

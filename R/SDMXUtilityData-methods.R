@@ -10,6 +10,7 @@
 #' @return an object of class "SDMXUtilityData"
 #' 
 #' @seealso \link{readSDMX}
+#' @export
 #'
 SDMXUtilityData <- function(xmlObj, namespaces){
   new("SDMXUtilityData",
@@ -19,7 +20,7 @@ SDMXUtilityData <- function(xmlObj, namespaces){
 
 #methods
 #=======
-
+#'@export
 as.data.frame.SDMXUtilityData <- function(x, row.names=NULL, optional=FALSE,
                                           labels = FALSE, ...){
   return(as.data.frame.SDMXCompactData(x, labels))

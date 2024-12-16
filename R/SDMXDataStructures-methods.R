@@ -10,7 +10,8 @@
 #' @return an object of class "SDMXDataStructures"
 #' 
 #' @seealso \link{readSDMX}
-#'
+#' @export
+#' 
 SDMXDataStructures <- function(xmlObj, namespaces){
   new("SDMXDataStructures",
       SDMX(xmlObj, namespaces),
@@ -51,6 +52,7 @@ datastructures.SDMXDataStructures <- function(xmlObj, namespaces){
 }
 
 #methods
+#'@export
 as.data.frame.SDMXDataStructures <- function(x, ...){
   
   out <- do.call("rbind.fill",

@@ -10,7 +10,8 @@
 #' @return an object of class "OrganisationSchemes"
 #' 
 #' @seealso \link{readSDMX}
-#'
+#' @export
+#' 
 SDMXOrganisationSchemes <- function(xmlObj, namespaces){
   new("SDMXOrganisationSchemes",
       SDMX(xmlObj, namespaces),
@@ -43,6 +44,7 @@ organisationSchemes.SDMXOrganisationSchemes <- function(xmlObj, namespaces){
 }
 
 #methods
+#'@export
 as.data.frame.SDMXOrganisationSchemes <- function(x, ...){
   
   out <- do.call("rbind.fill",

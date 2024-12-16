@@ -10,7 +10,8 @@
 #' @return an object of class "SDMXConcepts"
 #' 
 #' @seealso \link{readSDMX}
-#'
+#' @export
+#' 
 SDMXConcepts <- function(xmlObj, namespaces){
   new("SDMXConcepts",
       SDMX(xmlObj, namespaces),
@@ -67,6 +68,7 @@ conceptSchemes.SDMXConcepts <- function(xmlObj, namespaces){
 
 #as.data.frame
 #=============
+#'@export
 as.data.frame.SDMXConcepts <- function(x, ...,
                                        conceptSchemeId = NULL,
                                        ignore.empty.slots = TRUE){
@@ -101,8 +103,8 @@ as.data.frame.SDMXConcepts <- function(x, ...,
            obj <- switch(class(obj),
                      "character" = NA,
                      "logical" = NA,
-                     "list" = structure(as.list(rep(NA,2)),
-                                        .Names = names(conceptsList[[1]]@Name))
+                     "list" = structure(as.list(rep(NA,length(concept@Name))),
+                                        .Names = names(concept@Name))
            )
          }
          return(obj)

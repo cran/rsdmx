@@ -24,6 +24,7 @@
 #' @param headers an object of class "list" that contains any additional headers for the request.
 #'
 #'@note Internal class
+#' @export
 #'  
 SDMXDotStatRequestBuilder <- function(regUrl, repoUrl, accessKey = NULL,
                                    unsupportedResources = list(), 
@@ -43,7 +44,7 @@ SDMXDotStatRequestBuilder <- function(regUrl, repoUrl, accessKey = NULL,
   #resource handler
   handler <- list(
                             
-    #'dataflow' resource (path="GetKeyFamily/{resourceID}")
+    #dataflow resource (path="GetKeyFamily/resourceID")
     #------------------------------------------------------
     dataflow = function(obj){
       if(is.null(obj@resourceId)) obj@resourceId = "ALL"
@@ -62,7 +63,7 @@ SDMXDotStatRequestBuilder <- function(regUrl, repoUrl, accessKey = NULL,
       return(req)
     },
     
-    #'datastructure' resource (path="GetDataStructure/{resourceID}/{agencyID}")
+    #datastructure resource (path="GetDataStructure/resourceID/agencyID")
     #--------------------------------------------------------------------------
     datastructure = function(obj){
       if(is.null(obj@resourceId)) obj@resourceId = "all"
@@ -83,7 +84,7 @@ SDMXDotStatRequestBuilder <- function(regUrl, repoUrl, accessKey = NULL,
       return(req)
     },
     
-    #'data' resource (path="GetData/{flowRef}/{key}/{agencyId}")
+    #data resource (path="GetData/flowRef/key/agencyId")
     #----------------------------------------------------------
     data = function(obj){
       if(is.null(obj@flowRef)) stop("Missing flowRef value")

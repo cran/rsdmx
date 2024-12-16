@@ -28,6 +28,8 @@
 #'   provider <- SDMXServiceProvider(agencyId = "MYORG", name = "My Organization",
 #'                                   builder = myBuilder)
 #'                                   
+#' @export
+#'                                   
 SDMXServiceProvider <- function(agencyId, name,
                                 scale = "international", country = as.character(NA),
                                 builder) {
@@ -60,7 +62,8 @@ SDMXServiceProvider <- function(agencyId, name,
 #' 
 #' @seealso \link{getSDMXServiceProviders} \link{addSDMXServiceProvider}
 #'          \link{findSDMXServiceProvider} \link{readSDMX}
-#'
+#' @export
+#' 
 setSDMXServiceProviders <- function(){ # nocov start
     
   #international data providers
@@ -159,13 +162,23 @@ setSDMXServiceProviders <- function(){ # nocov start
       repoUrl = "https://sdmxcentral.imf.org/ws/public/sdmxapi/rest",
       compliant = TRUE)
   )
+  #IMF_DATA
+  IMF_DATA <- SDMXServiceProvider(
+    agencyId = "IMF_DATA", name = "International Monetary Fund - Data Portal",
+    builder = SDMXREST21RequestBuilder(
+      regUrl = "https://api.imf.org/external/sdmx/2.1",
+      repoUrl = "https://api.imf.org/external/sdmx/2.1",
+      compliant = TRUE)
+  )
     
   #OECD
   OECD <- SDMXServiceProvider(
     agencyId = "OECD", name = "Organisation for Economic Cooperation and Development ",
-    builder = SDMXDotStatRequestBuilder(
-      regUrl = "https://stats.oecd.org/restsdmx/sdmx.ashx",
-      repoUrl = "https://stats.oecd.org/restsdmx/sdmx.ashx")
+    builder = SDMXREST21RequestBuilder(
+      regUrl = "https://sdmx.oecd.org/public/rest",
+      repoUrl = "https://sdmx.oecd.org/public/rest",
+      compliant = TRUE
+    )
   )
   
   #UNICEF
@@ -212,8 +225,8 @@ setSDMXServiceProviders <- function(){ # nocov start
   ILO <- SDMXServiceProvider(
     agencyId = "ILO", name = "International Labour Organization of the United Nations",
     builder = SDMXREST21RequestBuilder(
-      regUrl = "https://www.ilo.org/sdmx/rest",
-      repoUrl = "https://www.ilo.org/sdmx/rest",
+      regUrl = "https://sdmx.ilo.org/rest",
+      repoUrl = "https://sdmx.ilo.org/rest",
       compliant = TRUE, skipProviderId = TRUE)                  
   )
   
@@ -221,8 +234,8 @@ setSDMXServiceProviders <- function(){ # nocov start
   WBG_WITS <- SDMXServiceProvider(
     agencyId = "WBG_WITS", name = "World Integrated Trade Solution",
     builder = SDMXREST21RequestBuilder(
-      regUrl = "http://wits.worldbank.org/API/V1/SDMX/V21/rest",
-      repoUrl = "http://wits.worldbank.org/API/V1/SDMX/V21/rest",
+      regUrl = "https://wits.worldbank.org/API/V1/SDMX/V21/rest",
+      repoUrl = "https://wits.worldbank.org/API/V1/SDMX/V21/rest",
       compliant = TRUE, skipProviderId = TRUE
     )
   )
@@ -284,9 +297,20 @@ setSDMXServiceProviders <- function(){ # nocov start
     agencyId = "INEGI", name = "Instituto Nacional de Estad\u00edstica y Geograf\u00eda (M\u00e9jico)",
     scale = "national", country = "MEX",
     builder = SDMXREST21RequestBuilder(
-      regUrl = "http://sdmx.snieg.mx/service/Rest",
-      repoUrl = "http://sdmx.snieg.mx/service/Rest",
+      regUrl = "https://sdmx.snieg.mx/ServiceV6/rest",
+      repoUrl = "https://sdmx.snieg.mx/ServiceV6/rest",
       compliant = FALSE
+    )
+  )
+  
+  #ISTAT - LEGACY (Italy)
+  ISTAT_LEGACY <- SDMXServiceProvider(
+    agencyId = "ISTAT_LEGACY", name = "Istituto nazionale di statistica (Italia)",
+    scale = "national", country = "ITA",
+    builder = SDMXREST21RequestBuilder(
+      regUrl = "http://sdmx.istat.it/SDMXWS/rest",
+      repoUrl = "http://sdmx.istat.it/SDMXWS/rest",
+      compliant = TRUE
     )
   )
   
@@ -295,8 +319,8 @@ setSDMXServiceProviders <- function(){ # nocov start
     agencyId = "ISTAT", name = "Istituto nazionale di statistica (Italia)",
     scale = "national", country = "ITA",
     builder = SDMXREST21RequestBuilder(
-      regUrl = "http://sdmx.istat.it/SDMXWS/rest",
-      repoUrl = "http://sdmx.istat.it/SDMXWS/rest",
+      regUrl = "https://esploradati.istat.it/SDMXWS/rest",
+      repoUrl = "https://esploradati.istat.it/SDMXWS/rest",
       compliant = TRUE
     )
   )
@@ -316,7 +340,7 @@ setSDMXServiceProviders <- function(){ # nocov start
       ),
       handler = list(
         
-        #'dataflow' resource (path="dataset/{resourceId}/def.sdmx.xml")
+        #dataflow resource (path="dataset/resourceId/def.sdmx.xml")
         #-----------------------------------------------------------------------
         dataflow = function(obj){  
           req <- sprintf("%s/dataset", obj@regUrl)
@@ -324,7 +348,7 @@ setSDMXServiceProviders <- function(){ # nocov start
           req <- paste(req, "def.sdmx.xml", sep="/")
           return(req)
         },
-        #'datastructure' resource (path="dataset/{resourceID}.structure.sdmx.xml")
+        #datastructure resource (path="dataset/resourceID.structure.sdmx.xml")
         #-----------------------------------------------------------------------
         datastructure = function(obj){
           req <- sprintf("%s/dataset", obj@regUrl)
@@ -333,7 +357,7 @@ setSDMXServiceProviders <- function(){ # nocov start
           req <- paste0(req, ".structure.sdmx.xml")
           return(req)
         },
-        #'data' resource (path="dataset/{resourceID}.generic.sdmx.xml")
+        #data resource (path="dataset/resourceID.generic.sdmx.xml")
         #----------------------------------------------------------
         data = function(obj){
           req <- sprintf("%s/dataset", obj@repoUrl)
@@ -372,18 +396,18 @@ setSDMXServiceProviders <- function(){ # nocov start
       ),
       handler = list(
         
-        #'dataflow' resource (path="/")
+        #dataflow resource (path="/")
         #-----------------------------------------------------------------------
         dataflow = function(obj){
           return(obj@regUrl)
         },
-        #'datastructure' resource (path="/{resourceID})
+        #datastructure resource (path="/resourceID)
         #-----------------------------------------------------------------------
         datastructure = function(obj){
           req <- paste(obj@regUrl, obj@resourceId, sep = "/")
           return(req)
         },
-        #'data' resource (path="getdata?dataflow={flowRef}&key={key})
+        #data resource (path="getdata?dataflow=flowRef&key=key)
         #----------------------------------------------------------
         data = function(obj){
           if(is.null(obj@flowRef)) stop("Missing flowRef value")
@@ -406,17 +430,6 @@ setSDMXServiceProviders <- function(){ # nocov start
         }
       ),
       compliant = FALSE
-    )
-  )
-  
-  #STAT_EE - Statistics Estonia database {Estonia}
-  STAT_EE <- SDMXServiceProvider(
-    agencyId = "STAT_EE", name = "Statistics Estonia database",
-    scale = "national", country = "EST",
-    builder = SDMXDotStatRequestBuilder(
-      regUrl = "http://andmebaas.stat.ee/restsdmx/sdmx.ashx",
-      repoUrl = "http://andmebaas.stat.ee/restsdmx/sdmx.ashx",
-      unsupportedResources = list("dataflow")
     )
   )
   
@@ -510,18 +523,18 @@ setSDMXServiceProviders <- function(){ # nocov start
       ),
       handler = list(
                                   
-        #'dataflow' resource (path="/")
+        #dataflow resource (path="/")
         #-----------------------------------------------------------------------
         dataflow = function(obj){
           return(obj@regUrl)
         },
-        #'datastructure' resource (path="/{resourceID})
+        #datastructure resource (path="/resourceID)
         #-----------------------------------------------------------------------
         datastructure = function(obj){
           req <- paste(obj@regUrl, obj@resourceId, sep = "/")
           return(req)
         },
-        #'data' resource (path="getdata?dataflow={flowRef}&key={key})
+        #data resource (path="getdata?dataflow=flowRef&key=key)
         #----------------------------------------------------------
         data = function(obj){
           if(is.null(obj@flowRef)) stop("Missing flowRef value")
@@ -545,9 +558,9 @@ setSDMXServiceProviders <- function(){ # nocov start
   
   listOfProviders <- list(
     #international
-    BIS, ECB, ESTAT,ESTAT_COMEXT, ESTAT_COMP, ESTAT_GROW, ESTAT_EMPL, IMF, OECD, UNICEF, CD2030, UNSD, ILO_Legacy, ILO, WBG_WITS, WB, PDH,
+    BIS, ECB, ESTAT,ESTAT_COMEXT, ESTAT_COMP, ESTAT_GROW, ESTAT_EMPL, IMF, IMF_DATA, OECD, UNICEF, CD2030, UNSD, ILO_Legacy, ILO, WBG_WITS, WB, PDH,
     #national
-    ABS, NBB, INSEE, INEGI, ISTAT, NOMIS, LSD, NCSI, STAT_EE, BBK,
+    ABS, NBB, INSEE, INEGI, ISTAT_LEGACY, ISTAT, NOMIS, LSD, NCSI, BBK,
     #others
     KNOEMA
   )
@@ -589,7 +602,8 @@ setSDMXServiceProviders <- function(){ # nocov start
 #'   
 #' @seealso \link{getSDMXServiceProviders} \link{findSDMXServiceProvider}
 #'          \link{readSDMX}
-#'          
+#' @export
+#'         
 addSDMXServiceProvider <- function(provider){
   .rsdmx.options$providers <- new("SDMXServiceProviders",
                                   providers = c(slot(.rsdmx.options$providers, "providers"), provider)
@@ -614,7 +628,8 @@ addSDMXServiceProvider <- function(provider){
 #' 
 #' @seealso \link{addSDMXServiceProvider} \link{findSDMXServiceProvider}
 #'          \link{readSDMX}
-#'          
+#' @export
+#'        
 getSDMXServiceProviders <- function(){
   out <- .rsdmx.options$providers
   return(out)
@@ -644,7 +659,7 @@ getSDMXServiceProviders <- function(){
 #'   
 #' @seealso \link{getSDMXServiceProviders} \link{addSDMXServiceProvider}
 #'          \link{readSDMX}
-#'
+#' @export
 findSDMXServiceProvider <- function(agencyId){
   if(is.null(agencyId)) return(NULL)
   res <- unlist(lapply(slot(getSDMXServiceProviders(),"providers"),

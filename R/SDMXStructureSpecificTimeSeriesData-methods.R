@@ -10,6 +10,8 @@
 #' @return an object of class "SDMXStructureSpecificTimeSeriesData"
 #' 
 #' @seealso \link{readSDMX}
+#' 
+#' @export
 #'
 SDMXStructureSpecificTimeSeriesData <- function(xmlObj, namespaces){
   new("SDMXStructureSpecificTimeSeriesData",
@@ -19,7 +21,7 @@ SDMXStructureSpecificTimeSeriesData <- function(xmlObj, namespaces){
 
 #methods
 #=======
-
+#'@export
 as.data.frame.SDMXStructureSpecificTimeSeriesData <- function(x, row.names=NULL, optional=FALSE,
                                                     labels = FALSE, ...){
   return(getSDMXAllCompactData(x, nsExpr = "structurespecific", labels = labels));

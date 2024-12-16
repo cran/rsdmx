@@ -62,6 +62,8 @@
 #' @param headers an object of class "list" that contains any additional headers for the request.
 #' @param ... (any other parameter to pass to httr::GET request)
 #' 
+#' @export
+#' 
 #' @return an object of class "SDMX"
 #' 
 #' @examples             
@@ -423,7 +425,7 @@ readSDMX <- function(file = NULL, isURL = TRUE, isRData = FALSE,
     
     #using helpers strategy (with a resource parameter)
     if(buildRequest && resource %in% c("data","dataflow")){
-      if(resource == "data" && providerId %in% c("ESTAT", "ISTAT", "WBG_WITS", "CD2030")){
+      if(resource == "data" && providerId %in% c("ESTAT", "ISTAT", "ISTAT_LEGACY", "WBG_WITS", "CD2030", "IMF_DATA", "OECD")){
         log$INFO("Attempt to fetch DSD ref from dataflow description")
         flow <- readSDMX(providerId = providerId, providerKey = providerKey, resource = "dataflow",
                          resourceId = flowRef, headers = headers, verbose = TRUE, logger = logger,  

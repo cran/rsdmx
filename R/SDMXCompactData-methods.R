@@ -10,7 +10,8 @@
 #' @return an object of class "SDMXCompactData"
 #' 
 #' @seealso \link{readSDMX}
-#'
+#' @export
+#' 
 SDMXCompactData <- function(xmlObj, namespaces){
   new("SDMXCompactData",
       SDMXData(xmlObj, namespaces)
@@ -151,7 +152,7 @@ getSDMXAllCompactData <- function(x, nsExpr, labels = FALSE, ...) {
   return(encodeSDMXOutput(dataset))
 }
 
-
+#'@export
 as.data.frame.SDMXCompactData <- function(x, row.names=NULL, optional=FALSE,
                                           labels = FALSE, ...){
   return(getSDMXAllCompactData(x, nsExpr = "compact", labels = labels));

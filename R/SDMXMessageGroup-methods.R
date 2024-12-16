@@ -10,7 +10,8 @@
 #' @return an object of class "SDMXMessageGroup"
 #' 
 #' @seealso \link{readSDMX}
-#'
+#' @export
+#' 
 SDMXMessageGroup <- function(xmlObj, namespaces){
   new("SDMXMessageGroup",
       SDMXData(xmlObj, namespaces)
@@ -65,6 +66,7 @@ class.SDMXMessageGroup <- function(xmlObj){
   
 }
 
+#'@export
 as.data.frame.SDMXMessageGroup <- function(x, row.names=NULL, optional=FALSE,
                                            labels = FALSE, ...){
   #TODO support for other included message types
