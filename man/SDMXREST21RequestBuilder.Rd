@@ -8,9 +8,9 @@
 \alias{SDMXREST21RequestBuilder,SDMXREST21RequestBuilder-method}
 \title{Class "SDMXREST21RequestBuilder"}
 \usage{
-SDMXREST21RequestBuilder(regUrl, repoUrl, accessKey = NULL, compliant,
-   unsupportedResources = list(), skipProviderId = FALSE, forceProviderId = FALSE,
-   headers = list())
+SDMXREST21RequestBuilder(regUrl, repoUrl, accessKey = NULL, formatter = NULL, compliant,
+   unsupportedResources = list(), skipProviderId = FALSE, forceProviderId = FALSE, 
+   skipTrailingSlash = FALSE, headers = list())
 }
 \arguments{
 \item{regUrl}{an object of class "character" giving the base Url of the SDMX 
@@ -21,6 +21,10 @@ service repository}
 
 \item{accessKey}{an object of class "character" indicating the name of request parameter for which
 an authentication or subscription user key/token has to be provided to perform requests}
+
+\item{formatter}{an object of class "list" giving a formatting function (for each resource) that
+takes an object of class "SDMXRequestParams" as single argument. Such parameter allows
+to customize eventual params (e.g. specific data provider rules)}
 
 \item{compliant}{an object of class "logical" indicating if the web-service 
 is compliant with the SDMX REST web-service specifications}
@@ -37,6 +41,9 @@ agencyId has to be added at the end of the request. Default value is
 \code{FALSE}. For some providers, the \code{all} value for the provider
 agency id is not allowed, in this case, the \code{agencyId} of the data 
 provider has to be forced in the web-request.}
+
+\item{skipTrailingSlash}{Avoid to use a trailing slash at the end of the requests.
+Default is \code{FALSE}.}
 
 \item{headers}{an object of class "list" that contains any additional headers for the request.}
 }

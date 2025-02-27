@@ -3,9 +3,9 @@
 #' @aliases SDMXREST21RequestBuilder,SDMXREST21RequestBuilder-method
 #' 
 #' @usage
-#'  SDMXREST21RequestBuilder(regUrl, repoUrl, accessKey = NULL, compliant,
-#'    unsupportedResources = list(), skipProviderId = FALSE, forceProviderId = FALSE,
-#'    headers = list())
+#'  SDMXREST21RequestBuilder(regUrl, repoUrl, accessKey = NULL, formatter = NULL, compliant,
+#'    unsupportedResources = list(), skipProviderId = FALSE, forceProviderId = FALSE, 
+#'    skipTrailingSlash = FALSE, headers = list())
 #'
 #' @param regUrl an object of class "character" giving the base Url of the SDMX 
 #'        service registry
@@ -13,6 +13,9 @@
 #'        service repository
 #' @param accessKey an object of class "character" indicating the name of request parameter for which
 #'        an authentication or subscription user key/token has to be provided to perform requests 
+#' @param formatter an object of class "list" giving a formatting function (for each resource) that
+#'        takes an object of class "SDMXRequestParams" as single argument. Such parameter allows
+#'        to customize eventual params (e.g. specific data provider rules)
 #' @param compliant an object of class "logical" indicating if the web-service 
 #'        is compliant with the SDMX REST web-service specifications
 #' @param unsupportedResources an object of class "list" giving eventual unsupported 
@@ -25,6 +28,8 @@
 #'        \code{FALSE}. For some providers, the \code{all} value for the provider
 #'        agency id is not allowed, in this case, the \code{agencyId} of the data 
 #'        provider has to be forced in the web-request.
+#' @param skipTrailingSlash Avoid to use a trailing slash at the end of the requests.
+#'        Default is \code{FALSE}.
 #' @param headers an object of class "list" that contains any additional headers for the request. 
 #'                
 #' @examples
@@ -35,20 +40,21 @@
 #'     compliant = TRUE)
 #' @export
 #' 
-SDMXREST21RequestBuilder <- function(regUrl, repoUrl, accessKey = NULL, compliant,
+SDMXREST21RequestBuilder <- function(regUrl, repoUrl, accessKey = NULL,
+                                     formatter = NULL, compliant,
                                      unsupportedResources = list(), 
                                      skipProviderId = FALSE, forceProviderId = FALSE,
+                                     skipTrailingSlash = FALSE,
                                      headers = list()){
   
   #params formatter
-  formatter = list(
-    #dataflow
-    dataflow = function(obj){return(obj)},
-    #datastructure
-    datastructure = function(obj){ return(obj)},
-    #data
-    data = function(obj){return(obj)}
-  )
+  if(is.null(formatter)) formatter = list()
+  #dataflow
+  if(is.null(formatter$dataflow)) formatter$dataflow = function(obj){return(obj)}
+  #datastructure
+  if(is.null(formatter$datastructure)) formatter$datastructure = function(obj){ return(obj)}
+  #data
+  if(is.null(formatter$data)) formatter$data = function(obj){return(obj)}
   
   #resource handler
   handler <- list(
@@ -59,7 +65,8 @@ SDMXREST21RequestBuilder <- function(regUrl, repoUrl, accessKey = NULL, complian
       if(is.null(obj@agencyId)) obj@agencyId = "all"
       if(is.null(obj@resourceId)) obj@resourceId = "all"
       if(is.null(obj@version)) obj@version = "latest"
-      req <- sprintf("%s/dataflow/%s/%s/%s/",obj@regUrl, obj@agencyId, obj@resourceId, obj@version)
+      req <- sprintf("%s/dataflow/%s/%s/%s",obj@regUrl, obj@agencyId, obj@resourceId, obj@version)
+      if(!skipTrailingSlash) req = paste0(req,"/")
       
       #require key
       if(!is.null(accessKey)){
@@ -80,9 +87,11 @@ SDMXREST21RequestBuilder <- function(regUrl, repoUrl, accessKey = NULL, complian
       if(is.null(obj@agencyId)) obj@agencyId = "all"
       if(is.null(obj@resourceId)) obj@resourceId = "all"
       if(is.null(obj@version)) obj@version = "latest"
-      req <- sprintf("%s/datastructure/%s/%s/%s/",obj@regUrl, obj@agencyId, obj@resourceId, obj@version)
+      req <- sprintf("%s/datastructure/%s/%s/%s",obj@regUrl, obj@agencyId, obj@resourceId, obj@version)
+      if(!skipTrailingSlash) req = paste0(req,"/")
       if(forceProviderId) req <- paste(req, obj@providerId, sep = "/")
-      req <- paste0(req, "?references=children") #TODO to see later to have arg for this
+      if(is.null(obj@references)) obj@references = "children"
+      req <- paste0(req, "?references=", obj@references)
       
       #require key
       if(!is.null(accessKey)){

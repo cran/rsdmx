@@ -8,7 +8,7 @@
 \alias{SDMXREST20RequestBuilder,SDMXREST20RequestBuilder-method}
 \title{Class "SDMXREST20RequestBuilder"}
 \usage{
-SDMXREST20RequestBuilder(regUrl, repoUrl, accessKey = NULL, compliant,
+SDMXREST20RequestBuilder(regUrl, repoUrl, accessKey = NULL, formatter, compliant,
    unsupportedResources = list(), skipProviderId = FALSE, forceProviderId = FALSE,
    headers = list())
 }
@@ -21,6 +21,10 @@ service repository}
 
 \item{accessKey}{an object of class "character" indicating the name of request parameter for which
 an authentication or subscription user key/token has to be provided to perform requests}
+
+\item{formatter}{an object of class "list" giving a formatting function (for each resource) that
+takes an object of class "SDMXRequestParams" as single argument. Such parameter allows
+to customize eventual params (e.g. specific data provider rules)}
 
 \item{compliant}{an object of class "logical" indicating if the web-service 
 is compliant with the SDMX REST web-service specifications}
